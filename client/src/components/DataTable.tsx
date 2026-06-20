@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Column<T> {
   header: string;
-  accessor?: keyof T | ((row: T) => React.ReactNode);
+  accessor?: keyof T | ((row: T) => React.ReactNode) | string;
   className?: string;
 }
 
@@ -82,7 +82,7 @@ export default function DataTable<T>({
                     if (typeof column.accessor === 'function') {
                       content = column.accessor(row);
                     } else if (column.accessor) {
-                      content = row[column.accessor] as unknown as React.ReactNode;
+                      content = (row as Record<string, unknown>)[column.accessor as string] as React.ReactNode;
                     }
 
                     return (
