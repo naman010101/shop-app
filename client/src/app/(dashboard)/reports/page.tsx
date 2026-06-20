@@ -138,7 +138,7 @@ export default function ReportsPage() {
     ...inflows.map(r => ({ ...r, type: 'inflow' })),
     ...sales.map(r => ({ ...r, type: 'sales' })),
     ...outflows.map(r => ({ ...r, type: 'outflow' }))
-  ].sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
+  ].sort((a, b) => new Date(`${b.date}T${b.time}`).getTime() - new Date(`${a.date}T${a.time}`).getTime());
 
   const allColumns = [
     { header: 'Date/Time', accessor: (row: any) => `${formatDate(row.date)} ${formatTime(row.time)}` },
