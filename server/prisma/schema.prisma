@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  STAFF
+}
+
+model User {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  passwordHash String
+  role         Role          @default(STAFF)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  inflows      CashInflow[]
+  sales        Sale[]
+  outflows     CashOutflow[]
+  auditLogs    AuditLog[]
+}
+
+model CashInflow {
+  id           String   @id @default(cuid())
+  amount       Decimal  @db.Decimal(15, 2)
+  slipNumber   String   @unique
+  customerName String
+  remarks      String?
+  date         String
+  time         String
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+}
+
+model Sale {
+  id           String   @id @default(cuid())
+  productName  String
+  amount       Decimal  @db.Decimal(15, 2)
+  customerName String
+  notes        String?
+  date         String
+  time         String
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+}
+
+model CashOutflow {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(15, 2)
+  reason    String
+  notes     String?
+  date      String
+  time      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  tableName String
+  recordId  String
+  details   Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}

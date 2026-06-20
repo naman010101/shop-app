@@ -1,0 +1,29 @@
+export function formatCurrency(amount: number | string): string {
+  const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+  if (isNaN(numericAmount)) return '₹0.00';
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+  }).format(numericAmount);
+}
+
+export function formatDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const [year, month, day] = dateStr.split('-');
+  return `${day}/${month}/${year}`;
+}
+
+export function formatTime(timeStr: string): string {
+  if (!timeStr) return '';
+  // Convert HH:mm:ss to 12 hour AM/PM
+  const [hoursStr, minutesStr, secondsStr] = timeStr.split(':');
+  const hours = parseInt(hoursStr, 10);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours}:${minutesStr} ${ampm}`;
+}
+
+export function cn(...classes: (string | undefined | null | boolean)[]) {
+  return classes.filter(Boolean).join(' ');
+}
