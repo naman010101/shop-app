@@ -9,6 +9,9 @@ const prisma = new PrismaClient();
  * OWNER  → Full financial overview (all 4 KPIs + combined recent transactions)
  * STAFF  → Restricted view (3 KPIs only + separated recent lists, own entries only)
  *          netBalance and outflowExceedsInflow are intentionally omitted for staff.
+ *
+ * Role is verified server-side from the JWT token (re-queried from DB on every
+ * request by the auth middleware), so staff cannot spoof admin access.
  */
 const getSummary = async (req, res, next) => {
   try {
@@ -16,7 +19,9 @@ const getSummary = async (req, res, next) => {
     const isOwner = req.user.role === 'OWNER';
 
     // Owners see all data; staff only see their own entries
-    const baseFilter = isOwner ? { date: today } : { date: today, userId: req.user.id };
+    const baseFilter = isOwner
+      ? { date: today }
+      : { date: today, userId: req.user.id };
 
     // ── Aggregates (both roles need these three) ──────────────────────────────
     const [inflowAgg, salesAgg, outflowAgg] = await Promise.all([
@@ -42,6 +47,7 @@ const getSummary = async (req, res, next) => {
     const totalOutflow = parseFloat(outflowAgg._sum.amount || 0);
 
     // ── STAFF response — separated recent lists, no financial roll-up ─────────
+    // Net balance, total flow, and admin financial analytics are withheld.
     if (!isOwner) {
       const [recentInflows, recentSales, recentOutflows] = await Promise.all([
         prisma.cashInflow.findMany({
@@ -64,6 +70,7 @@ const getSummary = async (req, res, next) => {
         }),
       ]);
 
+      // Return only staff-permitted data — no netBalance, no cross-staff totals
       return res.json({
         role: 'STAFF',
         today,
@@ -73,7 +80,6 @@ const getSummary = async (req, res, next) => {
         inflowCount:  inflowAgg._count,
         salesCount:   salesAgg._count,
         outflowCount: outflowAgg._count,
-        // Separated tables for staff — no mixed/net data
         recentInflows:  recentInflows.map(r  => ({ ...r, amount: parseFloat(r.amount) })),
         recentSales:    recentSales.map(r    => ({ ...r, amount: parseFloat(r.amount) })),
         recentOutflows: recentOutflows.map(r => ({ ...r, amount: parseFloat(r.amount) })),

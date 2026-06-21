@@ -126,7 +126,8 @@ const outflowColumns = [
 ];
 
 // ────────────────────────────────────────────────────────────────────────────
-// Staff Dashboard (3 cards + 3 separated tables)
+// Staff Dashboard — 3 cards + 3 separated recent entry tables
+// Admin-level financial summaries (Net Cash Balance, Total Flow) are hidden.
 // ────────────────────────────────────────────────────────────────────────────
 function StaffDashboard({ data, onRefresh, refreshing }: {
   data: StaffSummary;
@@ -141,46 +142,47 @@ function StaffDashboard({ data, onRefresh, refreshing }: {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
             My Dashboard
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Your activity for today ({formatDate(data.today)}).
           </p>
         </div>
         <button
+          id="staff-dashboard-refresh"
           onClick={onRefresh}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition-all cursor-pointer disabled:opacity-60"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
 
-      {/* 3 KPI Cards */}
+      {/* 3 KPI Cards — Cash Inflow | Sales | Cash Outflow */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <KPICard
-          title="Cash Inflow Today"
+          title="Cash Inflow"
           value={formatCurrency(data.totalInflow)}
           icon={<ArrowDownLeft className="w-6 h-6" />}
-          description={`${data.inflowCount} deposit${data.inflowCount !== 1 ? 's' : ''}`}
+          description={`${data.inflowCount} deposit${data.inflowCount !== 1 ? 's' : ''} today`}
           color="emerald"
         />
         <KPICard
-          title="Sales Today"
+          title="Sales"
           value={formatCurrency(data.totalSales)}
           icon={<TrendingUp className="w-6 h-6" />}
-          description={`${data.salesCount} bill${data.salesCount !== 1 ? 's' : ''}`}
+          description={`${data.salesCount} bill${data.salesCount !== 1 ? 's' : ''} today`}
           color="indigo"
         />
         <KPICard
-          title="Cash Outflow Today"
+          title="Cash Outflow"
           value={formatCurrency(data.totalOutflow)}
           icon={<ArrowUpRight className="w-6 h-6" />}
-          description={`${data.outflowCount} expense${data.outflowCount !== 1 ? 's' : ''}`}
+          description={`${data.outflowCount} expense${data.outflowCount !== 1 ? 's' : ''} today`}
           color="rose"
         />
       </div>
 
-      {/* Recent Cash Inflow */}
+      {/* Recent Cash Inflow Entries */}
       <section className="space-y-3">
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 rounded-lg bg-emerald-500/10">
@@ -200,7 +202,7 @@ function StaffDashboard({ data, onRefresh, refreshing }: {
         />
       </section>
 
-      {/* Recent Sales */}
+      {/* Recent Sales Entries */}
       <section className="space-y-3">
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 rounded-lg bg-indigo-500/10">
@@ -220,7 +222,7 @@ function StaffDashboard({ data, onRefresh, refreshing }: {
         />
       </section>
 
-      {/* Recent Cash Outflow */}
+      {/* Recent Cash Outflow Entries */}
       <section className="space-y-3">
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 rounded-lg bg-rose-500/10">
@@ -316,6 +318,7 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
           </p>
         </div>
         <button
+          id="owner-dashboard-refresh"
           onClick={onRefresh}
           disabled={refreshing}
           className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition-all cursor-pointer"
@@ -380,7 +383,10 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Root page — fetches data then delegates to the right sub-dashboard
+// Root page — fetches data then delegates to the correct role-based dashboard.
+// The backend API enforces role-based data filtering:
+//   STAFF → receives only their own Cash Inflow, Sales, Cash Outflow data.
+//   OWNER → receives full financial overview including Net Cash Balance.
 // ────────────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -410,6 +416,7 @@ export default function DashboardPage() {
   if (loading) return <SkeletonDashboard cards={isOwner ? 4 : 3} />;
   if (!data)   return null;
 
+  // Role check: backend enforces data access; frontend renders appropriate view.
   if (data.role === 'STAFF') {
     return (
       <StaffDashboard
