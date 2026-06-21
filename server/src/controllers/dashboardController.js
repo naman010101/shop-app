@@ -15,7 +15,8 @@ const prisma = new PrismaClient();
  */
 const getSummary = async (req, res, next) => {
   try {
-    const today = format(new Date(), 'yyyy-MM-dd');
+    const { getISTDateTime } = require('../utils/timezone');
+    const today = getISTDateTime().date;
     const isOwner = req.user.role === 'OWNER';
 
     // Owners see all data; staff only see their own entries

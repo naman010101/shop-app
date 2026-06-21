@@ -45,7 +45,8 @@ const create = async (req, res, next) => {
     }
 
     const { productName, amount, customerName, notes } = req.body;
-    const now = new Date();
+    const { getISTDateTime } = require('../utils/timezone');
+    const { date, time } = getISTDateTime();
 
     const record = await prisma.sale.create({
       data: {
@@ -53,8 +54,8 @@ const create = async (req, res, next) => {
         amount: parseFloat(amount),
         customerName,
         notes: notes || null,
-        date: format(now, 'yyyy-MM-dd'),
-        time: format(now, 'HH:mm:ss'),
+        date,
+        time,
         userId: req.user.id,
       },
       include: { user: { select: { username: true } } },

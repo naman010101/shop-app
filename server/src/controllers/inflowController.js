@@ -46,7 +46,8 @@ const create = async (req, res, next) => {
     }
 
     const { amount, slipNumber, customerName, remarks } = req.body;
-    const now = new Date();
+    const { getISTDateTime } = require('../utils/timezone');
+    const { date, time } = getISTDateTime();
 
     // Check duplicate slip number
     const existing = await prisma.cashInflow.findUnique({ where: { slipNumber } });
@@ -60,8 +61,8 @@ const create = async (req, res, next) => {
         slipNumber,
         customerName,
         remarks: remarks || null,
-        date: format(now, 'yyyy-MM-dd'),
-        time: format(now, 'HH:mm:ss'),
+        date,
+        time,
         userId: req.user.id,
       },
       include: { user: { select: { username: true } } },

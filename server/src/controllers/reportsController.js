@@ -5,7 +5,13 @@ const XLSX = require('xlsx');
 const prisma = new PrismaClient();
 
 const getDateRange = (type, date) => {
-  const d = date ? parseISO(date) : new Date();
+  let d;
+  if (date) {
+    d = parseISO(date);
+  } else {
+    const { getISTDateTime } = require('../utils/timezone');
+    d = parseISO(getISTDateTime().date);
+  }
   if (type === 'daily') return { start: format(d, 'yyyy-MM-dd'), end: format(d, 'yyyy-MM-dd') };
   if (type === 'weekly') return { start: format(startOfWeek(d, { weekStartsOn: 1 }), 'yyyy-MM-dd'), end: format(endOfWeek(d, { weekStartsOn: 1 }), 'yyyy-MM-dd') };
   if (type === 'monthly') return { start: format(startOfMonth(d), 'yyyy-MM-dd'), end: format(endOfMonth(d), 'yyyy-MM-dd') };
