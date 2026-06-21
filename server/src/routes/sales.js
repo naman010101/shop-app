@@ -10,7 +10,7 @@ router.use(authenticate);
 router.get('/', getAll);
 
 router.post('/', [
-  body('productName').trim().notEmpty().withMessage('Product/Service name is required'),
+  body('productName').trim().notEmpty().withMessage('Person Name is required'),
   body('amount').isFloat({ min: 0.01 }).withMessage('Amount must be greater than 0'),
   body('customerName').trim().notEmpty().withMessage('Customer name is required'),
 ], create);

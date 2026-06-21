@@ -157,7 +157,7 @@ export default function ReportsPage() {
       header: 'Details',
       accessor: (row: any) => {
         if (row.type === 'inflow') return `Customer: ${row.customerName} (Slip: ${row.slipNumber})`;
-        if (row.type === 'sales') return `Product: ${row.productName} (Customer: ${row.customerName})`;
+        if (row.type === 'sales') return `Person: ${row.productName} (Customer: ${row.customerName})`;
         return `Reason: ${row.reason}`;
       }
     },
@@ -261,7 +261,7 @@ export default function ReportsPage() {
                 title="Sales Audit Logs"
                 dataType="sales"
                 data={sales}
-                headers={['Date', 'Time', 'Product/Service', 'Customer Name', 'Notes', 'Amount (INR)', 'Recorded By']}
+                headers={['Date', 'Time', 'Person Name', 'Customer Name', 'Notes', 'Amount (INR)', 'Recorded By']}
                 keys={['date', 'time', 'productName', 'customerName', 'notes', 'amount', 'user']}
               />
             )}
@@ -412,7 +412,7 @@ export default function ReportsPage() {
             columns={[
               { header: 'Date', accessor: (row) => formatDate(row.date) },
               { header: 'Time', accessor: (row) => formatTime(row.time) },
-              { header: 'Product/Service', accessor: 'productName' },
+              { header: 'Person Name', accessor: 'productName' },
               { header: 'Customer', accessor: 'customerName' },
               { header: 'Notes', accessor: (row) => row.notes || '-' },
               { header: 'Recorded By', accessor: (row) => row.user?.username || 'N/A' },

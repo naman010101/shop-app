@@ -112,7 +112,7 @@ const inflowColumns = [
 
 const salesColumns = [
   { header: 'Time',        accessor: timeCol },
-  { header: 'Product',     accessor: (r: EntryRow) => r.productName || '—' },
+  { header: 'Person Name', accessor: (r: EntryRow) => r.productName || '—' },
   { header: 'Customer',    accessor: (r: EntryRow) => r.customerName || '—' },
   { header: 'Notes',       accessor: (r: EntryRow) => r.notes || '—' },
   { header: 'Amount',      accessor: amountCol('indigo'), className: 'text-right font-mono' },
@@ -283,7 +283,7 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
       header: 'Particulars',
       accessor: (row: Transaction) => {
         if (row.type === 'inflow')  return `Customer: ${row.customerName || 'N/A'}`;
-        if (row.type === 'sales')   return `Product: ${row.productName || 'N/A'}`;
+        if (row.type === 'sales')   return `Person: ${row.productName || 'N/A'}`;
         if (row.type === 'outflow') return `Reason: ${row.reason || 'N/A'}`;
         return '';
       },

@@ -130,7 +130,7 @@ const exportExcel = async (req, res, next) => {
     XLSX.utils.book_append_sheet(wb, inflowSheet, 'Cash Inflow');
 
     const salesSheet = XLSX.utils.json_to_sheet(sales.map(r => ({
-      'Sales ID': r.id, 'Date': r.date, 'Time': r.time, 'Product/Service': r.productName,
+      'Sales ID': r.id, 'Date': r.date, 'Time': r.time, 'Person Name': r.productName,
       'Customer Name': r.customerName, 'Amount (INR)': parseFloat(r.amount), 'Notes': r.notes || '', 'Staff': r.user.username,
     })));
     XLSX.utils.book_append_sheet(wb, salesSheet, 'Sales');

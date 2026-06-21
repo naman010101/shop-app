@@ -185,7 +185,7 @@ export default function SalesPage() {
   const columns = [
     { header: 'Date', accessor: (row: SaleRecord) => formatDate(row.date) },
     { header: 'Time', accessor: (row: SaleRecord) => formatTime(row.time) },
-    { header: 'Product/Service', accessor: 'productName' },
+    { header: 'Person Name', accessor: 'productName' },
     { header: 'Customer', accessor: 'customerName' },
     { header: 'Notes', accessor: (row: SaleRecord) => row.notes || '-' },
     { header: 'Recorded By', accessor: (row: SaleRecord) => row.user?.username || 'N/A' },
@@ -245,7 +245,7 @@ export default function SalesPage() {
             title="Sales Register Logs"
             dataType="sales"
             data={records}
-            headers={['Date', 'Time', 'Product/Service', 'Customer Name', 'Notes', 'Amount (INR)', 'Recorded By']}
+            headers={['Date', 'Time', 'Person Name', 'Customer Name', 'Notes', 'Amount (INR)', 'Recorded By']}
             keys={['date', 'time', 'productName', 'customerName', 'notes', 'amount', 'user']}
           />
         )}
@@ -263,12 +263,12 @@ export default function SalesPage() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  Product / Service Name
+                  Person Name
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Standard Service Bill"
+                  placeholder="e.g. Ramesh Kumar"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -430,7 +430,7 @@ export default function SalesPage() {
             
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                Product / Service Name
+                Person Name
               </label>
               <input
                 type="text"
@@ -514,7 +514,7 @@ export default function SalesPage() {
             </p>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
               <div>
-                <span className="font-semibold text-slate-500">Product / Service:</span>{' '}
+                <span className="font-semibold text-slate-500">Person Name:</span>{' '}
                 <span className="text-slate-800 dark:text-slate-200">{deleteRecord.productName}</span>
               </div>
               <div>
