@@ -73,6 +73,43 @@ const getMe = async (req, res) => {
   res.json({ user: req.user });
 };
 
+const changeUsername = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { newUsername } = req.body;
+    const trimmed = newUsername.trim().toLowerCase();
+
+    // Check uniqueness
+    const existing = await prisma.user.findUnique({ where: { username: trimmed } });
+    if (existing && existing.id !== req.user.id) {
+      return res.status(400).json({ error: 'Username is already taken.' });
+    }
+
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { username: trimmed },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        action: 'CHANGE_USERNAME',
+        tableName: 'User',
+        recordId: req.user.id,
+        details: { oldUsername: req.user.username, newUsername: trimmed },
+        userId: req.user.id,
+      },
+    });
+
+    res.json({ message: 'Username changed successfully.', username: trimmed });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const changePassword = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -111,4 +148,4 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { login, logout, getMe, changePassword };
+module.exports = { login, logout, getMe, changePassword, changeUsername };
