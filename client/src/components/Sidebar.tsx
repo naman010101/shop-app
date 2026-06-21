@@ -14,7 +14,8 @@ import {
   Settings,
   LogOut,
   X,
-  Menu
+  Menu,
+  Wallet
 } from 'lucide-react';
 import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
@@ -30,6 +31,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['OWNER', 'STAFF'] },
+    { name: 'Balance Management', href: '/balance', icon: Wallet, roles: ['OWNER', 'STAFF'] },
     { name: 'Cash Inflow', href: '/inflow', icon: ArrowDownLeft, roles: ['OWNER', 'STAFF'] },
     { name: 'Sales', href: '/sales', icon: TrendingUp, roles: ['OWNER', 'STAFF'] },
     { name: 'Cash Outflow', href: '/outflow', icon: ArrowUpRight, roles: ['OWNER', 'STAFF'] },

@@ -226,7 +226,7 @@ export default function InflowPage() {
     { header: 'Date', accessor: (row: InflowRecord) => formatDate(row.date) },
     { header: 'Time', accessor: (row: InflowRecord) => formatTime(row.time) },
     { header: 'Slip Number', accessor: 'slipNumber' },
-    { header: 'Customer', accessor: 'customerName' },
+    { header: 'Customer/Product', accessor: 'customerName' },
     { header: 'Remarks', accessor: (row: InflowRecord) => row.remarks || '-' },
     { header: 'Recorded By', accessor: (row: InflowRecord) => row.user?.username || 'N/A' },
     {
@@ -285,7 +285,7 @@ export default function InflowPage() {
             title="Cash Inflow Logs"
             dataType="inflow"
             data={records}
-            headers={['Date', 'Time', 'Slip Number', 'Customer Name', 'Remarks', 'Amount (INR)', 'Recorded By']}
+            headers={['Date', 'Time', 'Slip Number', 'Customer/Product Name', 'Remarks', 'Amount (INR)', 'Recorded By']}
             keys={['date', 'time', 'slipNumber', 'customerName', 'remarks', 'amount', 'user']}
           />
         )}
@@ -346,12 +346,12 @@ export default function InflowPage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  Customer Name
+                  Customer/Product Name
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Ramesh Kumar"
+                  placeholder="e.g. Ramesh Kumar / Product Sale"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -528,7 +528,7 @@ export default function InflowPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                Customer Name
+                Customer/Product Name
               </label>
               <input
                 type="text"

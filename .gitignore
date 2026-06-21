@@ -1,1 +1,26 @@
+# Vercel build output
 .vercel
+
+# Environment files — NEVER commit secrets
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Next.js build output
+client/.next/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Prisma generated client (regenerated on deploy)
+server/prisma/generated/
+
+# Logs
+*.log

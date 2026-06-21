@@ -156,7 +156,7 @@ export default function ReportsPage() {
     {
       header: 'Details',
       accessor: (row: any) => {
-        if (row.type === 'inflow') return `Customer: ${row.customerName} (Slip: ${row.slipNumber})`;
+        if (row.type === 'inflow') return `Customer/Product: ${row.customerName} (Slip: ${row.slipNumber})`;
         if (row.type === 'sales') return `Person: ${row.productName} (Customer: ${row.customerName})`;
         return `Reason: ${row.reason}`;
       }
@@ -252,7 +252,7 @@ export default function ReportsPage() {
                 title="Cash Inflow Audit Logs"
                 dataType="inflow"
                 data={inflows}
-                headers={['Date', 'Time', 'Slip Number', 'Customer Name', 'Remarks', 'Amount (INR)', 'Recorded By']}
+                headers={['Date', 'Time', 'Slip Number', 'Customer/Product Name', 'Remarks', 'Amount (INR)', 'Recorded By']}
                 keys={['date', 'time', 'slipNumber', 'customerName', 'remarks', 'amount', 'user']}
               />
             )}
@@ -393,7 +393,7 @@ export default function ReportsPage() {
               { header: 'Date', accessor: (row) => formatDate(row.date) },
               { header: 'Time', accessor: (row) => formatTime(row.time) },
               { header: 'Slip Number', accessor: 'slipNumber' },
-              { header: 'Customer', accessor: 'customerName' },
+              { header: 'Customer/Product', accessor: 'customerName' },
               { header: 'Remarks', accessor: (row) => row.remarks || '-' },
               { header: 'Recorded By', accessor: (row) => row.user?.username || 'N/A' },
               {

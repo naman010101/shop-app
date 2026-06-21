@@ -24,6 +24,18 @@ const getSummary = async (req, res, next) => {
       ? { date: today }
       : { date: today, userId: req.user.id };
 
+    let balanceRecord = null;
+    if (!isOwner) {
+      balanceRecord = await prisma.balanceRecord.findUnique({
+        where: {
+          userId_date: {
+            userId: req.user.id,
+            date: today
+          }
+        }
+      });
+    }
+
     // ── Aggregates (both roles need these three) ──────────────────────────────
     const [inflowAgg, salesAgg, outflowAgg] = await Promise.all([
       prisma.cashInflow.aggregate({
@@ -81,6 +93,11 @@ const getSummary = async (req, res, next) => {
         inflowCount:  inflowAgg._count,
         salesCount:   salesAgg._count,
         outflowCount: outflowAgg._count,
+        balanceRecord: balanceRecord ? {
+          ...balanceRecord,
+          openingBalance: parseFloat(balanceRecord.openingBalance),
+          closingBalance: balanceRecord.closingBalance !== null ? parseFloat(balanceRecord.closingBalance) : null
+        } : null,
         recentInflows:  recentInflows.map(r  => ({ ...r, amount: parseFloat(r.amount) })),
         recentSales:    recentSales.map(r    => ({ ...r, amount: parseFloat(r.amount) })),
         recentOutflows: recentOutflows.map(r => ({ ...r, amount: parseFloat(r.amount) })),

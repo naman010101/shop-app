@@ -12,6 +12,7 @@ const outflowRoutes = require('./routes/outflow');
 const dashboardRoutes = require('./routes/dashboard');
 const reportsRoutes = require('./routes/reports');
 const usersRoutes = require('./routes/users');
+const balanceRoutes = require('./routes/balance');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -49,6 +50,7 @@ app.use('/api/outflow', outflowRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/balance', balanceRoutes);
 
 // 404 handler
 app.use((req, res) => {
