@@ -10,7 +10,7 @@ import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
 import {
   ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet,
   RefreshCw, Clock, ShoppingBag, BadgeDollarSign, Banknote,
-  Coins, Lock, Hourglass, AlertTriangle, Check
+  Coins, Lock, Hourglass, AlertTriangle, Check, Calendar, Scale
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -41,7 +41,13 @@ interface OwnerSummary {
   totalInflow: number;
   totalSales: number;
   totalOutflow: number;
+  openingBalanceTotal: number;
   netBalance: number;
+  systemExpectedClosing: number;
+  staffClosingBalance: number | null;
+  cashDifference: number | null;
+  lastWorkingDayNetCash: number | null;
+  lastWorkingDate: string | null;
   inflowCount: number;
   salesCount: number;
   outflowCount: number;
@@ -59,6 +65,7 @@ interface StaffSummary {
   inflowCount: number;
   salesCount: number;
   outflowCount: number;
+  expectedClosingBalance: number | null;
   balanceRecord: {
     id: string;
     date: string;
@@ -341,11 +348,21 @@ function StaffDashboard({ data, onRefresh, refreshing }: {
               </div>
             ) : !hasClosing ? (
               <form onSubmit={handleSubmittingClosing} className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Coins className="w-4 h-4 text-indigo-500" />
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    2. Closing Balance
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-indigo-500" />
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      2. Closing Balance
+                    </span>
+                  </div>
+                  {data.expectedClosingBalance !== null && (
+                    <div className="flex flex-col items-end">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Expected (System)</span>
+                      <span className="text-sm font-black text-indigo-600 dark:text-indigo-400 font-mono">
+                        {formatCurrency(data.expectedClosingBalance)}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-slate-400 leading-normal">
                   Count physical cash at shift end and submit for audit.
@@ -399,6 +416,26 @@ function StaffDashboard({ data, onRefresh, refreshing }: {
           </div>
         </div>
       </section>
+
+      {/* Net Cash Display (only when opening balance submitted) */}
+      {data.balanceRecord && (
+        <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/5 border border-indigo-200 dark:border-indigo-800/40 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Current Net Cash</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">Opening + Inflow + Sales − Outflow</p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-black text-slate-900 dark:text-slate-50 font-mono">
+              {formatCurrency(
+                (data.balanceRecord?.openingBalance ?? 0) + data.totalInflow + data.totalSales - data.totalOutflow
+              )}
+            </div>
+            <p className="text-[10px] text-slate-400 mt-0.5">
+              Opening: {formatCurrency(data.balanceRecord?.openingBalance ?? 0)}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* 2 KPI Cards — Cash Inflow | Cash Outflow */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -571,13 +608,21 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
         totalOutflow={data.totalOutflow}
       />
 
-      {/* 4 KPI Cards */}
+      {/* Opening Balance Info Bar */}
+      <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3">
+        <Coins className="w-4 h-4 text-slate-400 shrink-0" />
+        <span className="text-xs font-semibold text-slate-500">Today's Opening Balance:</span>
+        <span className="text-sm font-black text-slate-800 dark:text-slate-200 font-mono">{formatCurrency(data.openingBalanceTotal)}</span>
+        <span className="ml-auto text-[10px] text-slate-400">Formula: Opening + Inflow + Sales − Outflow = Net Cash</span>
+      </div>
+
+      {/* 8 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <KPICard
           title="Total Inflow Today"
-          value={formatCurrency(data.totalInflow)}
+          value={formatCurrency(data.totalInflow + data.totalSales)}
           icon={<ArrowDownLeft className="w-6 h-6" />}
-          description={`${data.inflowCount} deposits`}
+          description={`${data.inflowCount + data.salesCount} inflow + sales entries`}
           color="emerald"
         />
         <KPICard
@@ -595,11 +640,52 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
           color="rose"
         />
         <KPICard
-          title="Net Cash Balance"
+          title="Current Net Cash"
           value={formatCurrency(data.netBalance)}
           icon={<Wallet className="w-6 h-6" />}
-          description="Inflows + Sales − Outflows"
+          description="Opening + Inflow + Sales − Outflow"
           color={data.netBalance >= 0 ? 'amber' : 'rose'}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <KPICard
+          title="Last Working Day Net"
+          value={data.lastWorkingDayNetCash !== null ? formatCurrency(data.lastWorkingDayNetCash) : '—'}
+          icon={<Calendar className="w-6 h-6" />}
+          description={data.lastWorkingDate ? `As of ${formatDate(data.lastWorkingDate)}` : 'No previous records'}
+          color="indigo"
+        />
+        <KPICard
+          title="Expected Closing Bal."
+          value={formatCurrency(data.systemExpectedClosing)}
+          icon={<Scale className="w-6 h-6" />}
+          description="System calculated"
+          color="amber"
+        />
+        <KPICard
+          title="Staff Closing Bal."
+          value={data.staffClosingBalance !== null ? formatCurrency(data.staffClosingBalance) : '—'}
+          icon={<Coins className="w-6 h-6" />}
+          description={data.staffClosingBalance !== null ? 'Manually submitted' : 'Not submitted yet'}
+          color={data.staffClosingBalance !== null ? 'emerald' : 'indigo'}
+        />
+        <KPICard
+          title="Cash Difference"
+          value={data.cashDifference !== null ? formatCurrency(data.cashDifference) : '—'}
+          icon={<AlertTriangle className="w-6 h-6" />}
+          description={
+            data.cashDifference === null ? 'Awaiting closing'
+            : data.cashDifference === 0 ? 'Balanced ✓'
+            : data.cashDifference > 0 ? 'Excess cash'
+            : 'Cash shortage'
+          }
+          color={
+            data.cashDifference === null ? 'indigo'
+            : data.cashDifference === 0 ? 'emerald'
+            : data.cashDifference > 0 ? 'amber'
+            : 'rose'
+          }
         />
       </div>
 

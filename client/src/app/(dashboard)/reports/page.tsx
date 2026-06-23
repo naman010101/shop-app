@@ -10,16 +10,14 @@ import KPICard from '@/components/KPICard';
 import {
   BarChart3,
   Calendar,
-  User,
   ArrowDownLeft,
   ArrowUpRight,
   TrendingUp,
   Wallet,
-  FileSpreadsheet,
-  FileText,
-  Search,
   Lock,
-  RefreshCw
+  FileText,
+  Scale,
+  Coins,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -27,6 +25,9 @@ interface ReportSummary {
   totalInflow: number;
   totalSales: number;
   totalOutflow: number;
+  openingBalance: number;
+  closingBalance: number;
+  netCashMovement: number;
   netBalance: number;
 }
 
@@ -37,6 +38,7 @@ interface UserSummary {
   totalInflow: number;
   totalSales: number;
   totalOutflow: number;
+  openingBalance: number;
   netBalance: number;
 }
 
@@ -46,21 +48,28 @@ export default function ReportsPage() {
 
   // Filters State
   const [reportType, setReportType] = useState<'daily' | 'weekly' | 'monthly' | 'custom'>('daily');
+  const [selectedDate, setSelectedDate] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [filterUser, setFilterUser] = useState('');
   const [usersList, setUsersList] = useState<{ id: string; username: string }[]>([]);
 
   // Report Data State
-  const [summary, setSummary] = useState<ReportSummary>({ totalInflow: 0, totalSales: 0, totalOutflow: 0, netBalance: 0 });
+  const [summary, setSummary] = useState<ReportSummary>({
+    totalInflow: 0, totalSales: 0, totalOutflow: 0,
+    openingBalance: 0, closingBalance: 0, netCashMovement: 0, netBalance: 0
+  });
+  const [reportRange, setReportRange] = useState<{ start: string; end: string } | null>(null);
   const [inflows, setInflows] = useState<any[]>([]);
   const [sales, setSales] = useState<any[]>([]);
   const [outflows, setOutflows] = useState<any[]>([]);
+  const [balanceRecords, setBalanceRecords] = useState<any[]>([]);
   const [userSummaries, setUserSummaries] = useState<UserSummary[]>([]);
-  
+
   // UI Tabs State
-  const [activeTab, setActiveTab] = useState<'summary' | 'inflow' | 'sales' | 'outflow' | 'userwise'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'inflow' | 'sales' | 'outflow' | 'balance' | 'userwise'>('summary');
   const [loading, setLoading] = useState(true);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   const fetchUsers = async () => {
     if (!isOwner) return;
@@ -72,33 +81,48 @@ export default function ReportsPage() {
     }
   };
 
+  const buildParams = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    if (reportType === 'custom') {
+      return {
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        userId: filterUser || undefined,
+      };
+    }
+    return {
+      type: reportType,
+      date: selectedDate || today,
+      userId: filterUser || undefined,
+    };
+  };
+
   const fetchReport = async () => {
     setLoading(true);
     try {
-      // 1. Fetch range-based transactions report
-      const params: any = {
-        type: reportType !== 'custom' ? reportType : undefined,
-        startDate: reportType === 'custom' && startDate ? startDate : undefined,
-        endDate: reportType === 'custom' && endDate ? endDate : undefined,
-        userId: filterUser || undefined,
-      };
-
+      const params = buildParams();
       const response = await api.get('/reports', { params });
       setSummary(response.data.summary);
+      setReportRange(response.data.range);
       setInflows(response.data.inflows);
       setSales(response.data.sales);
       setOutflows(response.data.outflows);
+      setBalanceRecords(response.data.balanceRecords || []);
 
-      // 2. Fetch User-Wise report
-      const userParams: any = {
-        startDate: reportType === 'custom' && startDate ? startDate : undefined,
-        endDate: reportType === 'custom' && endDate ? endDate : undefined,
-      };
-      if (reportType === 'daily') {
-        const today = new Date().toISOString().slice(0, 10);
-        userParams.startDate = today;
-        userParams.endDate = today;
+      // User-wise report with same date range
+      const userParams: any = {};
+      if (reportType === 'custom') {
+        userParams.startDate = startDate || undefined;
+        userParams.endDate = endDate || undefined;
+      } else {
+        // Compute range client-side to pass startDate/endDate for user-wise
+        const rangeData = response.data.range;
+        if (rangeData) {
+          userParams.startDate = rangeData.start;
+          userParams.endDate = rangeData.end;
+        }
       }
+      if (filterUser) userParams.userId = filterUser;
       const userRes = await api.get('/reports/user-wise', { params: userParams });
       setUserSummaries(userRes.data.report);
 
@@ -117,7 +141,54 @@ export default function ReportsPage() {
     if (isOwner) {
       fetchReport();
     }
-  }, [reportType, startDate, endDate, filterUser, isOwner]);
+  }, [reportType, selectedDate, startDate, endDate, filterUser, isOwner]);
+
+  const handleExportPdf = async () => {
+    setExportingPdf(true);
+    try {
+      const params = buildParams();
+      const response = await api.get('/reports/export/pdf', {
+        params,
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const range = reportRange;
+      link.setAttribute('download', `cash_report_${range?.start}_to_${range?.end}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('PDF exported successfully!');
+    } catch {
+      toast.error('Failed to export PDF.');
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const params = buildParams();
+      const response = await api.get('/reports/export/excel', {
+        params,
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const range = reportRange;
+      link.setAttribute('download', `cash_report_${range?.start}_to_${range?.end}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Excel exported successfully!');
+    } catch {
+      toast.error('Failed to export Excel.');
+    }
+  };
 
   if (!isOwner) {
     return (
@@ -141,7 +212,8 @@ export default function ReportsPage() {
   ].sort((a, b) => new Date(`${b.date}T${b.time}`).getTime() - new Date(`${a.date}T${a.time}`).getTime());
 
   const allColumns = [
-    { header: 'Date/Time', accessor: (row: any) => `${formatDate(row.date)} ${formatTime(row.time)}` },
+    { header: 'Date', accessor: (row: any) => formatDate(row.date) },
+    { header: 'Time', accessor: (row: any) => formatTime(row.time) },
     {
       header: 'Type',
       accessor: (row: any) => {
@@ -156,12 +228,12 @@ export default function ReportsPage() {
     {
       header: 'Details',
       accessor: (row: any) => {
-        if (row.type === 'inflow') return `Customer/Product: ${row.customerName} (Slip: ${row.slipNumber})`;
-        if (row.type === 'sales') return `Person: ${row.productName} (Customer: ${row.customerName})`;
-        return `Reason: ${row.reason}`;
+        if (row.type === 'inflow') return `Customer: ${row.customerName || '—'} (Slip: ${row.slipNumber || '—'})`;
+        if (row.type === 'sales') return `Person: ${row.productName || '—'} (Customer: ${row.customerName || '—'})`;
+        return `Reason: ${row.reason || '—'}`;
       }
     },
-    { header: 'Recorded By', accessor: (row: any) => row.user?.username || 'N/A' },
+    { header: 'Staff', accessor: (row: any) => row.user?.username || 'N/A' },
     {
       header: 'Amount',
       accessor: (row: any) => {
@@ -175,30 +247,39 @@ export default function ReportsPage() {
 
   const userColumns = [
     { header: 'Staff Username', accessor: 'username' },
-    { header: 'Account Role', accessor: (row: UserSummary) => row.role },
+    { header: 'Role', accessor: (row: UserSummary) => row.role },
+    { header: 'Opening Balance', accessor: (row: UserSummary) => formatCurrency(row.openingBalance), className: 'font-mono' },
+    { header: 'Cash Inflow', accessor: (row: UserSummary) => formatCurrency(row.totalInflow), className: 'font-mono' },
+    { header: 'Sales', accessor: (row: UserSummary) => formatCurrency(row.totalSales), className: 'font-mono' },
+    { header: 'Cash Outflow', accessor: (row: UserSummary) => formatCurrency(row.totalOutflow), className: 'font-mono' },
     {
-      header: 'Total Cash Inflow',
-      accessor: (row: UserSummary) => formatCurrency(row.totalInflow),
-      className: 'font-mono'
-    },
-    {
-      header: 'Total Sales logged',
-      accessor: (row: UserSummary) => formatCurrency(row.totalSales),
-      className: 'font-mono'
-    },
-    {
-      header: 'Total Cash Outflow',
-      accessor: (row: UserSummary) => formatCurrency(row.totalOutflow),
-      className: 'font-mono'
-    },
-    {
-      header: 'Net Ledger Balance',
+      header: 'Net Cash',
       accessor: (row: UserSummary) => {
         const style = row.netBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-rose-600 dark:text-rose-400 font-semibold';
         return <span className={style}>{formatCurrency(row.netBalance)}</span>;
       },
       className: 'text-right font-mono'
     }
+  ];
+
+  const balanceColumns = [
+    { header: 'Date', accessor: (row: any) => formatDate(row.date) },
+    { header: 'Staff', accessor: (row: any) => row.user?.username || '—' },
+    { header: 'Opening Balance', accessor: (row: any) => formatCurrency(row.openingBalance), className: 'font-mono' },
+    { header: 'Opening Time', accessor: (row: any) => formatTime(row.openingTime) },
+    { header: 'Closing Balance', accessor: (row: any) => row.closingBalance !== null ? formatCurrency(row.closingBalance) : '—', className: 'font-mono' },
+    { header: 'Closing Time', accessor: (row: any) => row.closingTime ? formatTime(row.closingTime) : '—' },
+    {
+      header: 'Status',
+      accessor: (row: any) => {
+        const styles: any = {
+          APPROVED: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+          FLAGGED: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+          UNVERIFIED: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+        };
+        return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold ${styles[row.status] || ''}`}>{row.status}</span>;
+      }
+    },
   ];
 
   return (
@@ -208,7 +289,7 @@ export default function ReportsPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-indigo-500" />
-            <span>Reports & Audit Desk</span>
+            <span>Reports &amp; Audit Desk</span>
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Generate ledger summaries, evaluate staff registers, and export transaction audit trails.
@@ -236,49 +317,53 @@ export default function ReportsPage() {
             ))}
           </div>
 
-          {/* Export presets (Only visible when table contains data) */}
+          {/* Export Buttons */}
           <div className="flex items-center gap-2">
-            {activeTab === 'summary' && (
-              <ExportButtons
-                title="All Transactions Report"
-                dataType="reports"
-                data={allTransactions}
-                headers={['Date/Time', 'Type', 'Amount (INR)', 'Recorded By']}
-                keys={['date', 'type', 'amount', 'user']}
-              />
-            )}
-            {activeTab === 'inflow' && (
-              <ExportButtons
-                title="Cash Inflow Audit Logs"
-                dataType="inflow"
-                data={inflows}
-                headers={['Date', 'Time', 'Slip Number', 'Customer/Product Name', 'Remarks', 'Amount (INR)', 'Recorded By']}
-                keys={['date', 'time', 'slipNumber', 'customerName', 'remarks', 'amount', 'user']}
-              />
-            )}
-            {activeTab === 'sales' && (
-              <ExportButtons
-                title="Sales Audit Logs"
-                dataType="sales"
-                data={sales}
-                headers={['Date', 'Time', 'Person Name', 'Customer Name', 'Notes', 'Amount (INR)', 'Recorded By']}
-                keys={['date', 'time', 'productName', 'customerName', 'notes', 'amount', 'user']}
-              />
-            )}
-            {activeTab === 'outflow' && (
-              <ExportButtons
-                title="Cash Outflow Audit Logs"
-                dataType="outflow"
-                data={outflows}
-                headers={['Date', 'Time', 'Reason', 'Notes', 'Amount (INR)', 'Recorded By']}
-                keys={['date', 'time', 'reason', 'notes', 'amount', 'user']}
-              />
-            )}
+            <button
+              onClick={handleExportExcel}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all cursor-pointer"
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              Export Excel
+            </button>
+            <button
+              onClick={handleExportPdf}
+              disabled={exportingPdf}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-all cursor-pointer disabled:opacity-60"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              {exportingPdf ? 'Exporting...' : 'Export PDF'}
+            </button>
           </div>
         </div>
 
+        {/* Date Range Label */}
+        {reportRange && !loading && (
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>
+              Showing data for: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(reportRange.start)}</span>
+              {reportRange.start !== reportRange.end && (
+                <> — <span className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(reportRange.end)}</span></>
+              )}
+            </span>
+          </div>
+        )}
+
         {/* Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+          {reportType !== 'custom' && (
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Reference Date</span>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              />
+            </div>
+          )}
+
           {reportType === 'custom' && (
             <>
               <div className="space-y-1">
@@ -320,37 +405,59 @@ export default function ReportsPage() {
 
       {/* KPI summaries */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-pulse">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
+          {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-28 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <KPICard
-            title="Total Cash Inflow"
-            value={formatCurrency(summary.totalInflow)}
-            icon={<ArrowDownLeft className="w-6 h-6" />}
-            color="emerald"
-          />
-          <KPICard
-            title="Total Sales Value"
-            value={formatCurrency(summary.totalSales)}
-            icon={<TrendingUp className="w-6 h-6" />}
-            color="indigo"
-          />
-          <KPICard
-            title="Total Cash Outflow"
-            value={formatCurrency(summary.totalOutflow)}
-            icon={<ArrowUpRight className="w-6 h-6" />}
-            color="rose"
-          />
-          <KPICard
-            title="Net Ledger Balance"
-            value={formatCurrency(summary.netBalance)}
-            icon={<Wallet className="w-6 h-6" />}
-            color={summary.netBalance >= 0 ? 'amber' : 'rose'}
-          />
+        <div className="space-y-4">
+          {/* Row 1: Transaction totals */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <KPICard
+              title="Total Cash Inflow"
+              value={formatCurrency(summary.totalInflow)}
+              icon={<ArrowDownLeft className="w-6 h-6" />}
+              color="emerald"
+            />
+            <KPICard
+              title="Total Sales Value"
+              value={formatCurrency(summary.totalSales)}
+              icon={<TrendingUp className="w-6 h-6" />}
+              color="indigo"
+            />
+            <KPICard
+              title="Total Cash Outflow"
+              value={formatCurrency(summary.totalOutflow)}
+              icon={<ArrowUpRight className="w-6 h-6" />}
+              color="rose"
+            />
+            <KPICard
+              title="Net Cash Movement"
+              value={formatCurrency(summary.netCashMovement)}
+              icon={<Wallet className="w-6 h-6" />}
+              color={summary.netCashMovement >= 0 ? 'amber' : 'rose'}
+              description="Opening + Inflow + Sales − Outflow"
+            />
+          </div>
+
+          {/* Row 2: Balance totals */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <KPICard
+              title="Opening Balance (Period)"
+              value={formatCurrency(summary.openingBalance)}
+              icon={<Coins className="w-6 h-6" />}
+              color="indigo"
+              description="Sum of all opening balances in range"
+            />
+            <KPICard
+              title="Closing Balance (Period)"
+              value={formatCurrency(summary.closingBalance)}
+              icon={<Scale className="w-6 h-6" />}
+              color="amber"
+              description="Sum of all submitted closing balances"
+            />
+          </div>
         </div>
       )}
 
@@ -358,11 +465,12 @@ export default function ReportsPage() {
       <div className="space-y-4">
         <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
           {[
-            { id: 'summary', name: 'All Transactions' },
-            { id: 'inflow', name: 'Inflow Records' },
-            { id: 'sales', name: 'Sales Records' },
-            { id: 'outflow', name: 'Outflow Records' },
-            { id: 'userwise', name: 'Staff User Summary' },
+            { id: 'summary',  name: 'All Transactions' },
+            { id: 'inflow',   name: 'Inflow Records' },
+            { id: 'sales',    name: 'Sales Records' },
+            { id: 'outflow',  name: 'Outflow Records' },
+            { id: 'balance',  name: 'Balance Records' },
+            { id: 'userwise', name: 'Staff Summary' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -444,6 +552,14 @@ export default function ReportsPage() {
             data={outflows}
             isLoading={loading}
             emptyMessage="No cash outflows recorded."
+          />
+        )}
+        {activeTab === 'balance' && (
+          <DataTable
+            columns={balanceColumns}
+            data={balanceRecords}
+            isLoading={loading}
+            emptyMessage="No balance records in this period."
           />
         )}
         {activeTab === 'userwise' && (

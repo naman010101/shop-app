@@ -125,7 +125,8 @@ export default function SettingsPage() {
         {/* ── Right column: username + password forms ── */}
         <div className="md:col-span-2 space-y-5">
 
-          {/* Change Username */}
+          {/* Change Username — OWNER only */}
+          {user?.role === 'OWNER' ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
             <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-4">
               <AtSign className="w-4 h-4 text-indigo-500" />
@@ -173,6 +174,21 @@ export default function SettingsPage() {
               </div>
             </form>
           </div>
+          ) : (
+          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-6">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-amber-500/10">
+                <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-amber-800 dark:text-amber-300">Username Cannot Be Changed</h3>
+                <p className="text-xs text-amber-700 dark:text-amber-400 mt-1 leading-relaxed">
+                  Staff accounts cannot modify their username or login identity. Please contact your Admin to update account details.
+                </p>
+              </div>
+            </div>
+          </div>
+          )}
 
           {/* Change Password */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">

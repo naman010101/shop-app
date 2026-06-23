@@ -551,7 +551,7 @@ export default function BalanceManagementPage() {
       )
     },
     {
-      header: 'Expected Bal.',
+      header: 'Expected Closing Bal.',
       accessor: (row: BalanceRecord) => (
         <span className="font-semibold font-mono text-slate-700 dark:text-slate-300">
           {formatCurrency(row.expectedClosingBalance)}
@@ -559,13 +559,27 @@ export default function BalanceManagementPage() {
       )
     },
     {
-      header: 'Variance',
+      header: 'Difference',
       accessor: (row: BalanceRecord) => {
         if (row.variance === null) return <span className="text-slate-400 italic">Unclosed</span>;
         const color = row.variance === 0 
           ? 'text-emerald-600 dark:text-emerald-400 font-semibold' 
+          : row.variance > 0
+          ? 'text-amber-500 dark:text-amber-400 font-semibold'
           : 'text-rose-600 dark:text-rose-400 font-semibold';
-        return <span className={`font-mono ${color}`}>{formatCurrency(row.variance)}</span>;
+        
+        const label = row.variance === 0 
+          ? 'Balanced' 
+          : row.variance > 0 
+          ? 'Excess Cash' 
+          : 'Cash Shortage';
+          
+        return (
+          <div className="flex flex-col">
+            <span className={`font-mono ${color}`}>{formatCurrency(row.variance)}</span>
+            <span className={`text-[9px] font-bold ${color}`}>{label}</span>
+          </div>
+        );
       }
     },
     {
@@ -587,9 +601,17 @@ export default function BalanceManagementPage() {
           );
         }
         
+        if (row.variance > 0) {
+          return (
+            <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              Excess Cash
+            </span>
+          );
+        }
+        
         return (
           <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400">
-            Mismatch
+            Cash Shortage
           </span>
         );
       }
