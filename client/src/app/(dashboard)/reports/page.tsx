@@ -151,18 +151,40 @@ export default function ReportsPage() {
         params,
         responseType: 'blob',
       });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Check if the server returned an error disguised as a blob
+      // (e.g. JSON error response received as blob due to responseType)
+      if (response.data.type && response.data.type.includes('application/json')) {
+        const text = await response.data.text();
+        const errorData = JSON.parse(text);
+        throw new Error(errorData.error || 'Server returned an error');
+      }
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       const range = reportRange;
-      link.setAttribute('download', `cash_report_${range?.start}_to_${range?.end}.pdf`);
+      link.setAttribute('download', `cash_report_${range?.start || 'report'}_to_${range?.end || 'report'}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
       toast.success('PDF exported successfully!');
-    } catch {
-      toast.error('Failed to export PDF.');
+    } catch (err: any) {
+      const message = err?.message || 'Failed to export PDF.';
+      // If it's an axios error with a blob response, try to read the error message
+      if (err?.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const errorData = JSON.parse(text);
+          toast.error(errorData.error || message);
+          return;
+        } catch {
+          // Couldn't parse blob error, use default message
+        }
+      }
+      toast.error(message);
     } finally {
       setExportingPdf(false);
     }
@@ -175,18 +197,40 @@ export default function ReportsPage() {
         params,
         responseType: 'blob',
       });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Check if the server returned an error disguised as a blob
+      if (response.data.type && response.data.type.includes('application/json')) {
+        const text = await response.data.text();
+        const errorData = JSON.parse(text);
+        throw new Error(errorData.error || 'Server returned an error');
+      }
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       const range = reportRange;
-      link.setAttribute('download', `cash_report_${range?.start}_to_${range?.end}.xlsx`);
+      link.setAttribute('download', `cash_report_${range?.start || 'report'}_to_${range?.end || 'report'}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
       toast.success('Excel exported successfully!');
-    } catch {
-      toast.error('Failed to export Excel.');
+    } catch (err: any) {
+      const message = err?.message || 'Failed to export Excel.';
+      if (err?.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const errorData = JSON.parse(text);
+          toast.error(errorData.error || message);
+          return;
+        } catch {
+          // Couldn't parse blob error, use default message
+        }
+      }
+      toast.error(message);
     }
   };
 

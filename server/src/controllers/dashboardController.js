@@ -7,6 +7,35 @@ const getSummary = async (req, res, next) => {
   try {
     const { getISTDateTime } = require('../utils/timezone');
     const today = getISTDateTime().date;
+
+    // ── WAREHOUSE_MGMT response ───────────────────────────────────────────────
+    if (req.user.role === 'WAREHOUSE_MGMT') {
+      const todayStart = new Date(`${today}T00:00:00.000Z`);
+      const todayEnd = new Date(`${today}T23:59:59.999Z`);
+
+      const [partyDispatchCount, shopTransferCount, partyDispatchQtySum, shopTransferQtySum] = await Promise.all([
+        prisma.warehousePartyDispatch.count({ where: { created_at: { gte: todayStart, lte: todayEnd } } }),
+        prisma.warehouseShopTransfer.count({ where: { created_at: { gte: todayStart, lte: todayEnd } } }),
+        prisma.warehousePartyDispatch.aggregate({
+          where: { created_at: { gte: todayStart, lte: todayEnd } },
+          _sum: { quantity: true }
+        }),
+        prisma.warehouseShopTransfer.aggregate({
+          where: { created_at: { gte: todayStart, lte: todayEnd } },
+          _sum: { quantity: true }
+        })
+      ]);
+
+      return res.json({
+        role: 'WAREHOUSE_MGMT',
+        today,
+        totalPartyDispatchToday: partyDispatchCount,
+        totalShopTransferToday: shopTransferCount,
+        totalDispatchedToday: partyDispatchQtySum._sum.quantity || 0,
+        totalQuantitySentToday: shopTransferQtySum._sum.quantity || 0
+      });
+    }
+
     const isOwner = req.user.role === 'OWNER';
 
     const baseFilter = isOwner
@@ -30,7 +59,7 @@ const getSummary = async (req, res, next) => {
     const totalSales   = parseFloat(salesAgg._sum.amount   || 0);
     const totalOutflow = parseFloat(outflowAgg._sum.amount || 0);
 
-    // ── STAFF response ────────────────────────────────────────────────────────
+    // ── CASHIER response ───────────────────────────────────────────────────────
     if (!isOwner) {
       const [recentInflows, recentSales, recentOutflows] = await Promise.all([
         prisma.cashInflow.findMany({ where: baseFilter, include: { user: { select: { username: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
@@ -42,7 +71,7 @@ const getSummary = async (req, res, next) => {
       const expectedClosingBalance = balanceRecord ? openingBalance + totalInflow + totalSales - totalOutflow : null;
 
       return res.json({
-        role: 'STAFF',
+        role: 'CASHIER',
         today,
         totalInflow,
         totalSales,
@@ -63,11 +92,18 @@ const getSummary = async (req, res, next) => {
     }
 
     // ── OWNER response ───────────────────────────────────────────────────────
-    const [recentInflows, recentSales, recentOutflows, todayBalanceRecords] = await Promise.all([
+    const todayStart = new Date(`${today}T00:00:00.000Z`);
+    const todayEnd = new Date(`${today}T23:59:59.999Z`);
+
+    const [recentInflows, recentSales, recentOutflows, todayBalanceRecords, partyDispatchCount, shopTransferCount, partyDispatchQtySum, shopTransferQtySum] = await Promise.all([
       prisma.cashInflow.findMany({ where: { date: today }, include: { user: { select: { username: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
       prisma.sale.findMany({ where: { date: today }, include: { user: { select: { username: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
       prisma.cashOutflow.findMany({ where: { date: today }, include: { user: { select: { username: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
       prisma.balanceRecord.findMany({ where: { date: today } }),
+      prisma.warehousePartyDispatch.count({ where: { created_at: { gte: todayStart, lte: todayEnd } } }),
+      prisma.warehouseShopTransfer.count({ where: { created_at: { gte: todayStart, lte: todayEnd } } }),
+      prisma.warehousePartyDispatch.aggregate({ where: { created_at: { gte: todayStart, lte: todayEnd } }, _sum: { quantity: true } }),
+      prisma.warehouseShopTransfer.aggregate({ where: { created_at: { gte: todayStart, lte: todayEnd } }, _sum: { quantity: true } }),
     ]);
 
     // Sum opening balances across all staff for today
@@ -136,6 +172,12 @@ const getSummary = async (req, res, next) => {
       outflowCount:         outflowAgg._count,
       outflowExceedsInflow: totalOutflow > (totalInflow + totalSales),
       recentTransactions,
+      warehouseSummary: {
+        totalPartyDispatchToday: partyDispatchCount,
+        totalShopTransferToday: shopTransferCount,
+        totalDispatchedToday: partyDispatchQtySum._sum.quantity || 0,
+        totalQuantitySentToday: shopTransferQtySum._sum.quantity || 0
+      }
     });
   } catch (error) {
     next(error);

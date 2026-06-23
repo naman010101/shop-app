@@ -10,11 +10,12 @@ const {
   getAuditLogs
 } = require('../controllers/balanceController');
 const authenticate = require('../middleware/auth');
+const authorize = require('../middleware/authorize');
 
 const router = express.Router();
 
-// All routes require authentication
-router.use(authenticate);
+// All routes require authentication and are restricted to OWNER and CASHIER
+router.use(authenticate, authorize('OWNER', 'CASHIER'));
 
 // Staff and Admin routes for shift entries
 router.get('/today', getTodayBalance);

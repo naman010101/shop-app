@@ -15,7 +15,7 @@ import { toast } from 'react-hot-toast';
 interface UserRecord {
   id: string;
   username: string;
-  role: 'OWNER' | 'STAFF';
+  role: 'OWNER' | 'CASHIER' | 'WAREHOUSE_MGMT';
   isActive: boolean;
   createdAt: string;
 }
@@ -40,12 +40,12 @@ export default function UsersPage() {
   // ── Create form ─────────────────────────────────────────────────────────────
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'OWNER' | 'STAFF'>('STAFF');
+  const [role, setRole] = useState<'OWNER' | 'CASHIER' | 'WAREHOUSE_MGMT'>('CASHIER');
   const [createSubmitting, setCreateSubmitting] = useState(false);
 
   // ── Edit form ───────────────────────────────────────────────────────────────
   const [editUsername, setEditUsername] = useState('');
-  const [editRole, setEditRole] = useState<'OWNER' | 'STAFF'>('STAFF');
+  const [editRole, setEditRole] = useState<'OWNER' | 'CASHIER' | 'WAREHOUSE_MGMT'>('CASHIER');
   const [editIsActive, setEditIsActive] = useState(true);
   const [editSubmitting, setEditSubmitting] = useState(false);
 
@@ -101,7 +101,7 @@ export default function UsersPage() {
     try {
       await api.post('/users', { username: username.trim().toLowerCase(), password, role });
       toast.success(`User '${username}' created successfully!`);
-      setUsername(''); setPassword(''); setRole('STAFF');
+      setUsername(''); setPassword(''); setRole('CASHIER');
       setCreateOpen(false);
       fetchUsers();
     } catch (error: any) {
@@ -406,7 +406,8 @@ export default function UsersPage() {
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Account Role</label>
             <select value={role} onChange={(e) => setRole(e.target.value as any)} className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 dark:bg-slate-900">
-              <option value="STAFF">Staff User</option>
+              <option value="CASHIER">Cashier User</option>
+              <option value="WAREHOUSE_MGMT">Warehouse Management User</option>
               <option value="OWNER">Owner (Admin)</option>
             </select>
           </div>
@@ -434,7 +435,8 @@ export default function UsersPage() {
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Account Role</label>
               <select value={editRole} disabled={editUser.id === currentUser?.id} onChange={(e) => setEditRole(e.target.value as any)} className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 dark:bg-slate-900">
-                <option value="STAFF">Staff User</option>
+                <option value="CASHIER">Cashier User</option>
+                <option value="WAREHOUSE_MGMT">Warehouse Management User</option>
                 <option value="OWNER">Owner (Admin)</option>
               </select>
             </div>

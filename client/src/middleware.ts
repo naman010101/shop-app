@@ -13,7 +13,10 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/outflow') || 
     pathname.startsWith('/reports') || 
     pathname.startsWith('/users') || 
-    pathname.startsWith('/settings');
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/balance') ||
+    pathname.startsWith('/party-dispatch') ||
+    pathname.startsWith('/shop-transfer');
 
   const isAuthRoute = pathname.startsWith('/login');
 

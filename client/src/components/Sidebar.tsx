@@ -15,7 +15,9 @@ import {
   LogOut,
   X,
   Menu,
-  Wallet
+  Wallet,
+  Package,
+  ArrowLeftRight
 } from 'lucide-react';
 import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
@@ -30,18 +32,20 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   const { user, logout } = useAuth();
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['OWNER', 'STAFF'] },
-    { name: 'Balance Management', href: '/balance', icon: Wallet, roles: ['OWNER', 'STAFF'] },
-    { name: 'Cash Inflow', href: '/inflow', icon: ArrowDownLeft, roles: ['OWNER', 'STAFF'] },
-    { name: 'Sales', href: '/sales', icon: TrendingUp, roles: ['OWNER', 'STAFF'] },
-    { name: 'Cash Outflow', href: '/outflow', icon: ArrowUpRight, roles: ['OWNER', 'STAFF'] },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['OWNER', 'CASHIER', 'WAREHOUSE_MGMT'] },
+    { name: 'Balance Management', href: '/balance', icon: Wallet, roles: ['OWNER', 'CASHIER'] },
+    { name: 'Cash Inflow', href: '/inflow', icon: ArrowDownLeft, roles: ['OWNER', 'CASHIER'] },
+    { name: 'Sales', href: '/sales', icon: TrendingUp, roles: ['OWNER', 'CASHIER'] },
+    { name: 'Cash Outflow', href: '/outflow', icon: ArrowUpRight, roles: ['OWNER', 'CASHIER'] },
+    { name: 'Party Dispatch Register', href: '/party-dispatch', icon: Package, roles: ['OWNER', 'WAREHOUSE_MGMT'] },
+    { name: 'Shop Stock Transfer Register', href: '/shop-transfer', icon: ArrowLeftRight, roles: ['OWNER', 'WAREHOUSE_MGMT'] },
     { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['OWNER'] },
     { name: 'Users', href: '/users', icon: Users, roles: ['OWNER'] },
-    { name: 'Settings', href: '/settings', icon: Settings, roles: ['OWNER', 'STAFF'] },
+    { name: 'Settings', href: '/settings', icon: Settings, roles: ['OWNER', 'CASHIER', 'WAREHOUSE_MGMT'] },
   ];
 
   const filteredNavigation = navigation.filter(
-    (item) => item.roles.includes(user?.role || 'STAFF')
+    (item) => item.roles.includes(user?.role || 'CASHIER')
   );
 
   const sidebarContent = (

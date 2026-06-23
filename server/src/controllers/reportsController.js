@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, parseISO } = require('date-fns');
 const XLSX = require('xlsx');
+const PDFDocument = require('pdfkit');
 
 const prisma = new PrismaClient();
 
@@ -209,7 +210,6 @@ const exportExcel = async (req, res, next) => {
 
 const exportPDF = async (req, res, next) => {
   try {
-    const PDFDocument = require('pdfkit');
     const { type = 'daily', date, startDate, endDate, userId } = req.query;
     let range;
     if (startDate && endDate) {
@@ -242,8 +242,20 @@ const exportPDF = async (req, res, next) => {
 
     const doc = new PDFDocument({ margin: 40, size: 'A4' });
     const filename = `cash_report_${range.start}_to_${range.end}.pdf`;
-    res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', 'application/pdf');
+
+    // Handle PDF stream errors — if the doc errors after pipe starts,
+    // we can't send a JSON error because headers are already sent.
+    doc.on('error', (err) => {
+      console.error('PDF generation error:', err);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'PDF generation failed' });
+      } else {
+        res.end();
+      }
+    });
+
     doc.pipe(res);
 
     // Header
@@ -319,7 +331,13 @@ const exportPDF = async (req, res, next) => {
 
     doc.end();
   } catch (error) {
-    next(error);
+    // Only send error response if headers haven't been sent yet
+    if (!res.headersSent) {
+      next(error);
+    } else {
+      console.error('PDF export error (headers already sent):', error);
+      res.end();
+    }
   }
 };
 

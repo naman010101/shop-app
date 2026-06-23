@@ -2,10 +2,11 @@ const express = require('express');
 const { body } = require('express-validator');
 const { getAll, create, update, remove } = require('../controllers/outflowController');
 const authenticate = require('../middleware/auth');
+const authorize = require('../middleware/authorize');
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(authenticate, authorize('OWNER', 'CASHIER'));
 
 router.get('/', getAll);
 

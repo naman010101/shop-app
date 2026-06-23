@@ -10,7 +10,7 @@ import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
 import {
   ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet,
   RefreshCw, Clock, ShoppingBag, BadgeDollarSign, Banknote,
-  Coins, Lock, Hourglass, AlertTriangle, Check, Calendar, Scale
+  Coins, Lock, Hourglass, AlertTriangle, Check, Calendar, Scale, Package, ArrowLeftRight, ExternalLink
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -53,11 +53,17 @@ interface OwnerSummary {
   outflowCount: number;
   outflowExceedsInflow: boolean;
   recentTransactions: Transaction[];
+  warehouseSummary: {
+    totalPartyDispatchToday: number;
+    totalShopTransferToday: number;
+    totalDispatchedToday: number;
+    totalQuantitySentToday: number;
+  };
 }
 
 // ── Staff payload ────────────────────────────────────────────────────────────
 interface StaffSummary {
-  role: 'STAFF';
+  role: 'CASHIER';
   today: string;
   totalInflow: number;
   totalSales: number;
@@ -81,7 +87,17 @@ interface StaffSummary {
   recentOutflows: EntryRow[];
 }
 
-type SummaryData = OwnerSummary | StaffSummary;
+// ── Warehouse payload ─────────────────────────────────────────────────────────
+interface WarehouseSummary {
+  role: 'WAREHOUSE_MGMT';
+  today: string;
+  totalPartyDispatchToday: number;
+  totalShopTransferToday: number;
+  totalDispatchedToday: number;
+  totalQuantitySentToday: number;
+}
+
+type SummaryData = OwnerSummary | StaffSummary | WarehouseSummary;
 
 // ────────────────────────────────────────────────────────────────────────────
 // Skeleton loader
@@ -700,16 +716,165 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
           emptyMessage="No transactions recorded today yet."
         />
       </div>
+
+      {/* Warehouse Management Overview (Owner only) */}
+      {data.warehouseSummary && (
+        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Package className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-50">Warehouse Management Overview</h2>
+                <p className="text-xs text-slate-400">Today's warehouse dispatch and shop stock transfer activity</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Link href="/party-dispatch" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/40 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-colors">
+                <Package className="w-3.5 h-3.5" />
+                Party Dispatch
+              </Link>
+              <Link href="/shop-transfer" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors">
+                <ArrowLeftRight className="w-3.5 h-3.5" />
+                Shop Transfer
+              </Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-800/30 text-center">
+              <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{data.warehouseSummary.totalPartyDispatchToday}</div>
+              <div className="text-xs text-slate-500 mt-1">Party Dispatches</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-800/30 text-center">
+              <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{data.warehouseSummary.totalDispatchedToday}</div>
+              <div className="text-xs text-slate-500 mt-1">Total Qty Dispatched</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-800/30 text-center">
+              <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{data.warehouseSummary.totalShopTransferToday}</div>
+              <div className="text-xs text-slate-500 mt-1">Shop Transfers</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700 text-center">
+              <div className="text-2xl font-black text-slate-700 dark:text-slate-300">{data.warehouseSummary.totalQuantitySentToday}</div>
+              <div className="text-xs text-slate-500 mt-1">Total Qty Transferred</div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
 
+import Link from 'next/link';
+
 // ────────────────────────────────────────────────────────────────────────────
-// Root page — fetches data then delegates to the correct role-based dashboard.
-// The backend API enforces role-based data filtering:
-//   STAFF → receives only their own Cash Inflow, Sales, Cash Outflow data.
-//   OWNER → receives full financial overview including Net Cash Balance.
+// Warehouse Dashboard — for WAREHOUSE_MGMT users
+// Shows today's dispatch/transfer KPIs and quick navigation links.
 // ────────────────────────────────────────────────────────────────────────────
+function WarehouseDashboard({ data, onRefresh, refreshing }: {
+  data: WarehouseSummary;
+  onRefresh: () => void;
+  refreshing: boolean;
+}) {
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+            Warehouse Dashboard
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            Today's dispatch and transfer summary for {formatDate(data.today)}.
+          </p>
+        </div>
+        <button
+          id="warehouse-dashboard-refresh"
+          onClick={onRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition-all cursor-pointer disabled:opacity-60"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <KPICard
+          title="Party Dispatches Today"
+          value={String(data.totalPartyDispatchToday)}
+          icon={<Package className="w-6 h-6" />}
+          description="Number of party dispatch entries"
+          color="indigo"
+        />
+        <KPICard
+          title="Total Qty Dispatched"
+          value={String(data.totalDispatchedToday)}
+          icon={<ArrowUpRight className="w-6 h-6" />}
+          description="Sum of quantities dispatched today"
+          color="amber"
+        />
+        <KPICard
+          title="Shop Transfers Today"
+          value={String(data.totalShopTransferToday)}
+          icon={<ArrowLeftRight className="w-6 h-6" />}
+          description="Number of shop transfer entries"
+          color="emerald"
+        />
+        <KPICard
+          title="Total Qty Transferred"
+          value={String(data.totalQuantitySentToday)}
+          icon={<TrendingUp className="w-6 h-6" />}
+          description="Sum of quantities transferred today"
+          color="indigo"
+        />
+      </div>
+
+      {/* Quick Access */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+        <h2 className="text-base font-bold text-slate-900 dark:text-slate-50 mb-4 flex items-center gap-2">
+          <Package className="w-5 h-5 text-indigo-500" />
+          Quick Access — Registers
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link
+            href="/party-dispatch"
+            className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-800/30 hover:bg-indigo-100 dark:hover:bg-indigo-950/40 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                <Package className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-slate-900 dark:text-slate-50">Party Dispatch Register</div>
+                <div className="text-xs text-slate-500">Log outbound dispatches to parties</div>
+              </div>
+            </div>
+            <ExternalLink className="w-4 h-4 text-indigo-400 group-hover:text-indigo-600 transition-colors" />
+          </Link>
+
+          <Link
+            href="/shop-transfer"
+            className="flex items-center justify-between p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-800/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <ArrowLeftRight className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-slate-900 dark:text-slate-50">Shop Stock Transfer Register</div>
+                <div className="text-xs text-slate-500">Log stock transfers from warehouse to shop</div>
+              </div>
+            </div>
+            <ExternalLink className="w-4 h-4 text-emerald-400 group-hover:text-emerald-600 transition-colors" />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [data, setData] = useState<SummaryData | null>(null);
@@ -733,13 +898,23 @@ export default function DashboardPage() {
     fetchSummary();
   }, []);
 
-  const isOwner = user?.role === 'OWNER';
+  const role = user?.role;
 
-  if (loading) return <SkeletonDashboard cards={isOwner ? 4 : 3} />;
+  if (loading) return <SkeletonDashboard cards={role === 'OWNER' ? 4 : role === 'WAREHOUSE_MGMT' ? 4 : 3} />;
   if (!data)   return null;
 
-  // Role check: backend enforces data access; frontend renders appropriate view.
-  if (data.role === 'STAFF') {
+  // Route to correct dashboard by role
+  if (data.role === 'WAREHOUSE_MGMT') {
+    return (
+      <WarehouseDashboard
+        data={data}
+        onRefresh={() => fetchSummary(true)}
+        refreshing={refreshing}
+      />
+    );
+  }
+
+  if (data.role === 'CASHIER') {
     return (
       <StaffDashboard
         data={data}

@@ -13,6 +13,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const reportsRoutes = require('./routes/reports');
 const usersRoutes = require('./routes/users');
 const balanceRoutes = require('./routes/balance');
+const warehouseRoutes = require('./routes/warehouse');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Disposition'],
 }));
 
 // Logging
@@ -51,6 +53,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/balance', balanceRoutes);
+app.use('/api/warehouse', warehouseRoutes);
 
 // 404 handler
 app.use((req, res) => {

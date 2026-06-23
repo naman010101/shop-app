@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 export interface User {
   id: string;
   username: string;
-  role: 'OWNER' | 'STAFF';
+  role: 'OWNER' | 'CASHIER' | 'WAREHOUSE_MGMT';
 }
 
 interface AuthContextType {

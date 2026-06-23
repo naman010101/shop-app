@@ -1,0 +1,393 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api';
+import { formatDate } from '@/lib/utils';
+import DataTable from '@/components/DataTable';
+import Modal from '@/components/Modal';
+import ExportButtons from '@/components/ExportButtons';
+import { Plus, Edit2, Trash2, Search, ArrowLeftRight } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+
+interface ShopTransferRecord {
+  id: string;
+  item_name: string;
+  quantity: number;
+  slip_number: string;
+  by_person: string;
+  created_at: string;
+  userId: string;
+  user: { username: string };
+}
+
+export default function ShopTransferPage() {
+  const { user } = useAuth();
+  const isOwner = user?.role === 'OWNER';
+
+  // ── Records state ───────────────────────────────────────────────────────────
+  const [records, setRecords] = useState<ShopTransferRecord[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const [loading, setLoading] = useState(true);
+
+  // ── Filter state ────────────────────────────────────────────────────────────
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [filterItem, setFilterItem] = useState('');
+  const [filterSlip, setFilterSlip] = useState('');
+
+  // ── Create form state ────────────────────────────────────────────────────────
+  const [createOpen, setCreateOpen] = useState(false);
+  const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [slipNumber, setSlipNumber] = useState('');
+  const [byPerson, setByPerson] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // ── Edit/Delete state (Owner only) ─────────────────────────────────────────
+  const [editRecord, setEditRecord] = useState<ShopTransferRecord | null>(null);
+  const [editItemName, setEditItemName] = useState('');
+  const [editQuantity, setEditQuantity] = useState('');
+  const [editSlipNumber, setEditSlipNumber] = useState('');
+  const [editByPerson, setEditByPerson] = useState('');
+  const [editSubmitting, setEditSubmitting] = useState(false);
+
+  const [deleteRecord, setDeleteRecord] = useState<ShopTransferRecord | null>(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
+  // ── Data fetching ────────────────────────────────────────────────────────────
+  const fetchRecords = async () => {
+    setLoading(true);
+    try {
+      const params: any = {
+        page,
+        limit,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        itemName: filterItem || undefined,
+        slipNumber: filterSlip || undefined,
+      };
+      const response = await api.get('/warehouse/shop-transfer', { params });
+      setRecords(response.data.records);
+      setTotal(response.data.total);
+    } catch {
+      toast.error('Failed to load shop transfer records.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecords();
+  }, [page, startDate, endDate, filterItem, filterSlip]);
+
+  const resetCreateForm = () => {
+    setItemName(''); setQuantity(''); setSlipNumber(''); setByPerson('');
+  };
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await api.post('/warehouse/shop-transfer', {
+        item_name: itemName.trim(),
+        quantity: parseInt(quantity),
+        slip_number: slipNumber.trim(),
+        by_person: byPerson.trim(),
+      });
+      toast.success('Shop stock transfer recorded successfully!');
+      resetCreateForm();
+      setCreateOpen(false);
+      setPage(1);
+      fetchRecords();
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to create entry.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEditClick = (rec: ShopTransferRecord) => {
+    setEditRecord(rec);
+    setEditItemName(rec.item_name);
+    setEditQuantity(String(rec.quantity));
+    setEditSlipNumber(rec.slip_number);
+    setEditByPerson(rec.by_person);
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editRecord) return;
+    setEditSubmitting(true);
+    try {
+      await api.put(`/warehouse/shop-transfer/${editRecord.id}`, {
+        item_name: editItemName.trim(),
+        quantity: parseInt(editQuantity),
+        slip_number: editSlipNumber.trim(),
+        by_person: editByPerson.trim(),
+      });
+      toast.success('Record updated successfully!');
+      setEditRecord(null);
+      fetchRecords();
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to update record.');
+    } finally {
+      setEditSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteRecord) return;
+    setDeleteSubmitting(true);
+    try {
+      await api.delete(`/warehouse/shop-transfer/${deleteRecord.id}`);
+      toast.success('Record deleted successfully!');
+      setDeleteRecord(null);
+      fetchRecords();
+    } catch {
+      toast.error('Failed to delete record.');
+    } finally {
+      setDeleteSubmitting(false);
+    }
+  };
+
+  const clearFilters = () => {
+    setStartDate(''); setEndDate('');
+    setFilterItem(''); setFilterSlip('');
+    setPage(1);
+  };
+
+  // ── Table columns ────────────────────────────────────────────────────────────
+  const columns = [
+    { header: 'Date', accessor: (r: ShopTransferRecord) => formatDate(r.created_at.split('T')[0]) },
+    { header: 'Item / Product', accessor: 'item_name' as const },
+    { header: 'Qty', accessor: (r: ShopTransferRecord) => <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-mono">{r.quantity}</span> },
+    { header: 'Slip #', accessor: 'slip_number' as const },
+    { header: 'By Person', accessor: 'by_person' as const },
+    { header: 'Recorded By', accessor: (r: ShopTransferRecord) => r.user?.username || 'N/A' },
+    {
+      header: 'Actions',
+      accessor: (row: ShopTransferRecord) => (
+        <div className="flex justify-end gap-2">
+          {isOwner ? (
+            <>
+              <button
+                onClick={() => handleEditClick(row)}
+                className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white dark:bg-indigo-500/20 dark:text-indigo-400 dark:hover:bg-indigo-500 transition-colors cursor-pointer"
+                title="Edit"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setDeleteRecord(row)}
+                className="p-1 rounded bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 transition-colors cursor-pointer"
+                title="Delete"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </>
+          ) : (
+            <span className="text-xs text-slate-400 italic" title="Only owners can edit entries.">Submitted</span>
+          )}
+        </div>
+      ),
+      className: 'text-right',
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+            <ArrowLeftRight className="w-6 h-6 text-emerald-500" />
+            Shop Stock Transfer Register
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Log and track stock transfers from the warehouse to the shop floor.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {isOwner && (
+            <ExportButtons
+              title="Shop Stock Transfer Register"
+              dataType="warehouse"
+              data={records}
+              headers={['Date', 'Item Name', 'Quantity', 'Slip No.', 'By Person', 'Recorded By']}
+              keys={['created_at', 'item_name', 'quantity', 'slip_number', 'by_person', 'user']}
+            />
+          )}
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl text-sm transition-all cursor-pointer shadow-lg shadow-emerald-600/30"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Entry</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Filters & Search</h3>
+          <button onClick={clearFilters} className="text-xs font-semibold text-emerald-500 hover:text-emerald-600 transition-colors cursor-pointer">
+            Clear All
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: 'Item Name', value: filterItem, setter: setFilterItem, placeholder: 'Search item...' },
+            { label: 'Slip Number', value: filterSlip, setter: setFilterSlip, placeholder: 'Search slip...' },
+          ].map(({ label, value, setter, placeholder }) => (
+            <div key={label} className="space-y-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">{label}</span>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <Search className="w-3.5 h-3.5" />
+                </span>
+                <input
+                  type="text"
+                  placeholder={placeholder}
+                  value={value}
+                  onChange={(e) => { setter(e.target.value); setPage(1); }}
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-emerald-500 dark:bg-slate-900"
+                />
+              </div>
+            </div>
+          ))}
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase">Start Date</span>
+            <input type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-emerald-500 dark:bg-slate-900" />
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase">End Date</span>
+            <input type="date" value={endDate} onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-emerald-500 dark:bg-slate-900" />
+          </div>
+        </div>
+      </div>
+
+      {/* Records Table */}
+      <DataTable
+        columns={columns}
+        data={records}
+        isLoading={loading}
+        currentPage={page}
+        totalPages={Math.ceil(total / limit)}
+        onPageChange={setPage}
+        emptyMessage="No shop stock transfer records match your filters."
+      />
+
+      {/* ═══════════════════════ CREATE MODAL ═══════════════════════ */}
+      <Modal isOpen={createOpen} onClose={() => { setCreateOpen(false); resetCreateForm(); }} title="Add Shop Stock Transfer Entry">
+        <form onSubmit={handleCreate} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Item / Product Name</label>
+              <input id="st-item-name" type="text" required placeholder="e.g. Cement Bags" value={itemName} onChange={(e) => setItemName(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Quantity</label>
+              <input id="st-quantity" type="number" required min="1" placeholder="e.g. 30" value={quantity} onChange={(e) => setQuantity(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500 font-mono" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Slip Number (Unique)</label>
+              <input id="st-slip-number" type="text" required placeholder="e.g. TSLIP-001" value={slipNumber} onChange={(e) => setSlipNumber(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500" />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">By Person (Operator)</label>
+              <input id="st-by-person" type="text" required placeholder="e.g. Rajesh Gupta" value={byPerson} onChange={(e) => setByPerson(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500" />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" onClick={() => { setCreateOpen(false); resetCreateForm(); }}
+              className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+              Cancel
+            </button>
+            <button type="submit" disabled={submitting}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+              {submitting ? 'Saving...' : 'Submit Entry'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* ═══════════════════════ EDIT MODAL (Owner only) ═══════════════════════ */}
+      <Modal isOpen={!!editRecord} onClose={() => setEditRecord(null)} title="Edit Shop Transfer Entry">
+        {editRecord && (
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <p className="text-xs text-slate-500">Recorded by: <span className="font-semibold text-slate-700 dark:text-slate-300">{editRecord.user?.username}</span> on {formatDate(editRecord.created_at.split('T')[0])}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Item / Product Name</label>
+                <input id="edit-st-item" type="text" required value={editItemName} onChange={(e) => setEditItemName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Quantity</label>
+                <input id="edit-st-quantity" type="number" required min="1" value={editQuantity} onChange={(e) => setEditQuantity(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500 font-mono" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Slip Number</label>
+                <input id="edit-st-slip" type="text" required value={editSlipNumber} onChange={(e) => setEditSlipNumber(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500" />
+              </div>
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">By Person</label>
+                <input id="edit-st-person" type="text" required value={editByPerson} onChange={(e) => setEditByPerson(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-emerald-500" />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button type="button" onClick={() => setEditRecord(null)}
+                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+                Cancel
+              </button>
+              <button type="submit" disabled={editSubmitting}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+                {editSubmitting ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      {/* ═══════════════════════ DELETE MODAL (Owner only) ═══════════════════════ */}
+      <Modal isOpen={!!deleteRecord} onClose={() => setDeleteRecord(null)} title="Confirm Deletion">
+        {deleteRecord && (
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Are you sure you want to permanently delete this shop transfer record?
+            </p>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+              <div><span className="font-semibold text-slate-500">Slip #:</span>{' '}<span className="font-mono text-slate-800 dark:text-slate-200">{deleteRecord.slip_number}</span></div>
+              <div><span className="font-semibold text-slate-500">Item:</span>{' '}<span className="text-slate-800 dark:text-slate-200">{deleteRecord.item_name}</span></div>
+              <div><span className="font-semibold text-slate-500">Quantity:</span>{' '}<span className="font-semibold text-emerald-600 dark:text-emerald-400">{deleteRecord.quantity}</span></div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button type="button" onClick={() => setDeleteRecord(null)}
+                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+                Cancel
+              </button>
+              <button onClick={handleDelete} disabled={deleteSubmitting}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+                {deleteSubmitting ? 'Deleting...' : 'Delete Record'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  );
+}

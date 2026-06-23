@@ -9,7 +9,7 @@ import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
 
 interface ExportButtonsProps {
   title: string;
-  dataType: 'inflow' | 'sales' | 'outflow' | 'reports' | 'users';
+  dataType: 'inflow' | 'sales' | 'outflow' | 'reports' | 'users' | 'warehouse';
   data: any[];
   headers: string[];
   keys: string[];
@@ -37,6 +37,8 @@ export default function ExportButtons({
         // Format special fields
         if (key === 'amount') {
           obj[header] = parseFloat(val);
+        } else if (key === 'quantity') {
+          obj[header] = parseInt(val);
         } else if (key === 'date') {
           obj[header] = formatDate(val);
         } else if (key === 'time') {
@@ -82,6 +84,8 @@ export default function ExportButtons({
         let val = item[key];
         if (key === 'amount') {
           return `INR ${parseFloat(val).toFixed(2)}`;
+        } else if (key === 'quantity') {
+          return `${parseInt(val)}`;
         } else if (key === 'date') {
           return formatDate(val);
         } else if (key === 'time') {
