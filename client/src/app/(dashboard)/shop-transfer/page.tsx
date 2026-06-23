@@ -170,30 +170,33 @@ export default function ShopTransferPage() {
     { header: 'Recorded By', accessor: (r: ShopTransferRecord) => r.user?.username || 'N/A' },
     {
       header: 'Actions',
-      accessor: (row: ShopTransferRecord) => (
-        <div className="flex justify-end gap-2">
-          {isOwner ? (
-            <>
-              <button
-                onClick={() => handleEditClick(row)}
-                className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white dark:bg-indigo-500/20 dark:text-indigo-400 dark:hover:bg-indigo-500 transition-colors cursor-pointer"
-                title="Edit"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => setDeleteRecord(row)}
-                className="p-1 rounded bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 transition-colors cursor-pointer"
-                title="Delete"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </>
-          ) : (
-            <span className="text-xs text-slate-400 italic" title="Only owners can edit entries.">Submitted</span>
-          )}
-        </div>
-      ),
+      accessor: (row: ShopTransferRecord) => {
+        const canManage = isOwner || (user?.role === 'WAREHOUSE_MGMT' && row.userId === user?.id);
+        return (
+          <div className="flex justify-end gap-2">
+            {canManage ? (
+              <>
+                <button
+                  onClick={() => handleEditClick(row)}
+                  className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white dark:bg-indigo-500/20 dark:text-indigo-400 dark:hover:bg-indigo-500 transition-colors cursor-pointer"
+                  title="Edit"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setDeleteRecord(row)}
+                  className="p-1 rounded bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 transition-colors cursor-pointer"
+                  title="Delete"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </>
+            ) : (
+              <span className="text-xs text-slate-400 italic" title="No permission to edit this entry.">Submitted</span>
+            )}
+          </div>
+        );
+      },
       className: 'text-right',
     },
   ];

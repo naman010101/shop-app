@@ -87,19 +87,23 @@ const createPartyDispatch = async (req, res, next) => {
     next(error);
   }
 };
-
 const updatePartyDispatch = async (req, res, next) => {
   try {
-    if (req.user.role !== 'OWNER') {
-      return res.status(403).json({ error: 'Only the Owner can edit warehouse records.' });
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     const { id } = req.params;
+
+    const existingRecord = await prisma.warehousePartyDispatch.findUnique({ where: { id } });
+    if (!existingRecord) {
+      return res.status(404).json({ error: 'Record not found.' });
+    }
+    if (req.user.role !== 'OWNER' && existingRecord.userId !== req.user.id) {
+      return res.status(403).json({ error: 'You do not have permission to edit this record.' });
+    }
+
     const { bill_number, challan_number, party_name, item_name, quantity, slip_number, by_person } = req.body;
 
     if (slip_number) {
@@ -143,11 +147,16 @@ const updatePartyDispatch = async (req, res, next) => {
 
 const deletePartyDispatch = async (req, res, next) => {
   try {
-    if (req.user.role !== 'OWNER') {
-      return res.status(403).json({ error: 'Only the Owner can delete warehouse records.' });
+    const { id } = req.params;
+
+    const existingRecord = await prisma.warehousePartyDispatch.findUnique({ where: { id } });
+    if (!existingRecord) {
+      return res.status(404).json({ error: 'Record not found.' });
+    }
+    if (req.user.role !== 'OWNER' && existingRecord.userId !== req.user.id) {
+      return res.status(403).json({ error: 'You do not have permission to delete this record.' });
     }
 
-    const { id } = req.params;
     await prisma.warehousePartyDispatch.delete({ where: { id } });
 
     await prisma.auditLog.create({
@@ -243,19 +252,23 @@ const createShopTransfer = async (req, res, next) => {
     next(error);
   }
 };
-
 const updateShopTransfer = async (req, res, next) => {
   try {
-    if (req.user.role !== 'OWNER') {
-      return res.status(403).json({ error: 'Only the Owner can edit warehouse records.' });
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     const { id } = req.params;
+
+    const existingRecord = await prisma.warehouseShopTransfer.findUnique({ where: { id } });
+    if (!existingRecord) {
+      return res.status(404).json({ error: 'Record not found.' });
+    }
+    if (req.user.role !== 'OWNER' && existingRecord.userId !== req.user.id) {
+      return res.status(403).json({ error: 'You do not have permission to edit this record.' });
+    }
+
     const { item_name, quantity, slip_number, by_person } = req.body;
 
     if (slip_number) {
@@ -296,11 +309,16 @@ const updateShopTransfer = async (req, res, next) => {
 
 const deleteShopTransfer = async (req, res, next) => {
   try {
-    if (req.user.role !== 'OWNER') {
-      return res.status(403).json({ error: 'Only the Owner can delete warehouse records.' });
+    const { id } = req.params;
+
+    const existingRecord = await prisma.warehouseShopTransfer.findUnique({ where: { id } });
+    if (!existingRecord) {
+      return res.status(404).json({ error: 'Record not found.' });
+    }
+    if (req.user.role !== 'OWNER' && existingRecord.userId !== req.user.id) {
+      return res.status(403).json({ error: 'You do not have permission to delete this record.' });
     }
 
-    const { id } = req.params;
     await prisma.warehouseShopTransfer.delete({ where: { id } });
 
     await prisma.auditLog.create({
