@@ -8,7 +8,8 @@ const {
   getAllShopTransfers,
   createShopTransfer,
   updateShopTransfer,
-  deleteShopTransfer
+  deleteShopTransfer,
+  getWarehouseActivityLogs
 } = require('../controllers/warehouseController');
 const authenticate = require('../middleware/auth');
 const authorize = require('../middleware/authorize');
@@ -17,6 +18,9 @@ const router = express.Router();
 
 // All routes require authentication and are restricted to OWNER and WAREHOUSE_MGMT roles
 router.use(authenticate, authorize('OWNER', 'WAREHOUSE_MGMT'));
+
+// ── Activity Logs Route (restricted to OWNER only) ───────────────────────────
+router.get('/activity-logs', authorize('OWNER'), getWarehouseActivityLogs);
 
 // ── Party Dispatch Routes ────────────────────────────────────────────────────
 router.get('/party-dispatch', getAllPartyDispatches);

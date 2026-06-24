@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils';
 import DataTable from '@/components/DataTable';
 import Modal from '@/components/Modal';
 import ExportButtons from '@/components/ExportButtons';
@@ -42,6 +42,15 @@ export default function PartyDispatchPage() {
   const [filterItem, setFilterItem] = useState('');
   const [filterBill, setFilterBill] = useState('');
   const [filterSlip, setFilterSlip] = useState('');
+  const [filterUser, setFilterUser] = useState('');
+  const [usersList, setUsersList] = useState<{ id: string; username: string }[]>([]);
+
+  // ── Activity Logs state (Owner only) ────────────────────────────────────────
+  const [logsOpen, setLogsOpen] = useState(false);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logsPage, setLogsPage] = useState(1);
+  const [logsTotal, setLogsTotal] = useState(0);
 
   // ── Create form state ────────────────────────────────────────────────────────
   const [createOpen, setCreateOpen] = useState(false);
@@ -81,6 +90,7 @@ export default function PartyDispatchPage() {
         itemName: filterItem || undefined,
         billNumber: filterBill || undefined,
         slipNumber: filterSlip || undefined,
+        userId: filterUser || undefined,
       };
       const response = await api.get('/warehouse/party-dispatch', { params });
       setRecords(response.data.records);
@@ -92,9 +102,45 @@ export default function PartyDispatchPage() {
     }
   };
 
+  const fetchUsers = async () => {
+    if (!isOwner) return;
+    try {
+      const response = await api.get('/users');
+      setUsersList(response.data.users);
+    } catch {
+      console.error('Failed to load users for filter.');
+    }
+  };
+
+  const fetchLogs = async () => {
+    if (!isOwner) return;
+    setLogsLoading(true);
+    try {
+      const response = await api.get('/warehouse/activity-logs', {
+        params: { page: logsPage, limit: 10 }
+      });
+      setLogs(response.data.logs);
+      setLogsTotal(response.data.total);
+    } catch {
+      toast.error('Failed to load activity logs.');
+    } finally {
+      setLogsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchRecords();
-  }, [page, startDate, endDate, filterParty, filterItem, filterBill, filterSlip]);
+  }, [page, startDate, endDate, filterParty, filterItem, filterBill, filterSlip, filterUser]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [isOwner]);
+
+  useEffect(() => {
+    if (logsOpen) {
+      fetchLogs();
+    }
+  }, [logsOpen, logsPage]);
 
   const resetCreateForm = () => {
     setBillNumber(''); setChallanNumber(''); setPartyName('');
@@ -181,6 +227,7 @@ export default function PartyDispatchPage() {
     setStartDate(''); setEndDate('');
     setFilterParty(''); setFilterItem('');
     setFilterBill(''); setFilterSlip('');
+    setFilterUser('');
     setPage(1);
   };
 
@@ -243,13 +290,21 @@ export default function PartyDispatchPage() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {isOwner && (
-            <ExportButtons
-              title="Party Dispatch Register"
-              dataType="warehouse"
-              data={records}
-              headers={['Date', 'Bill No.', 'Challan No.', 'Party Name', 'Item Name', 'Quantity', 'Slip No.', 'By Person', 'Recorded By']}
-              keys={['created_at', 'bill_number', 'challan_number', 'party_name', 'item_name', 'quantity', 'slip_number', 'by_person', 'user']}
-            />
+            <>
+              <button
+                onClick={() => { setLogsPage(1); setLogsOpen(true); }}
+                className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition-all cursor-pointer"
+              >
+                <span>Activity Logs</span>
+              </button>
+              <ExportButtons
+                title="Party Dispatch Register"
+                dataType="warehouse"
+                data={records}
+                headers={['Date', 'Bill No.', 'Challan No.', 'Party Name', 'Item Name', 'Quantity', 'Slip No.', 'By Person', 'Recorded By']}
+                keys={['created_at', 'bill_number', 'challan_number', 'party_name', 'item_name', 'quantity', 'slip_number', 'by_person', 'user']}
+              />
+            </>
           )}
           <button
             onClick={() => setCreateOpen(true)}
@@ -292,6 +347,21 @@ export default function PartyDispatchPage() {
               </div>
             </div>
           ))}
+          {isOwner && (
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Recorded By</span>
+              <select
+                value={filterUser}
+                onChange={(e) => { setFilterUser(e.target.value); setPage(1); }}
+                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              >
+                <option value="">All Users</option>
+                {usersList.map((u) => (
+                  <option key={u.id} value={u.id}>{u.username}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase">Start Date</span>
             <input type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
@@ -434,6 +504,54 @@ export default function PartyDispatchPage() {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* ═══════════════════════ ACTIVITY LOGS MODAL (Owner only) ═══════════════════════ */}
+      <Modal isOpen={logsOpen} onClose={() => setLogsOpen(false)} title="Warehouse Activity Logs" size="large">
+        <div className="space-y-4">
+          <DataTable
+            columns={[
+              { header: 'Time', accessor: (row: any) => `${formatDate(row.createdAt.split('T')[0])} ${formatTime(row.createdAt.split('T')[1].split('.')[0])}` },
+              { header: 'Operator', accessor: (row: any) => row.user?.username || 'System' },
+              {
+                header: 'Action',
+                accessor: (row: any) => (
+                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                    row.action === 'CREATE' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
+                    row.action === 'UPDATE' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
+                    'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                  }`}>
+                    {row.action}
+                  </span>
+                )
+              },
+              { header: 'Register', accessor: (row: any) => row.tableName === 'WarehousePartyDispatch' ? 'Party Dispatch' : 'Shop Transfer' },
+              {
+                header: 'Details',
+                accessor: (row: any) => {
+                  if (!row.details) return '-';
+                  const d = row.details;
+                  if (row.action === 'CREATE') {
+                    return `Created entry (Slip: ${d.slip_number || '-'}, Qty: ${d.quantity || '-'})`;
+                  }
+                  if (row.action === 'UPDATE') {
+                    return `Updated: ${Object.keys(d).map(k => `${k}: ${d[k]}`).join(', ')}`;
+                  }
+                  if (row.action === 'DELETE') {
+                    return `Deleted entry`;
+                  }
+                  return JSON.stringify(d);
+                }
+              }
+            ]}
+            data={logs}
+            isLoading={logsLoading}
+            currentPage={logsPage}
+            totalPages={Math.ceil(logsTotal / 10)}
+            onPageChange={setLogsPage}
+            emptyMessage="No activity logs recorded yet."
+          />
+        </div>
       </Modal>
     </div>
   );

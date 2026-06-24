@@ -337,6 +337,48 @@ const deleteShopTransfer = async (req, res, next) => {
   }
 };
 
+const getWarehouseActivityLogs = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'OWNER') {
+      return res.status(403).json({ error: 'Only the Owner can view warehouse activity logs.' });
+    }
+
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [logs, total] = await Promise.all([
+      prisma.auditLog.findMany({
+        where: {
+          tableName: {
+            in: ['WarehousePartyDispatch', 'WarehouseShopTransfer']
+          }
+        },
+        include: {
+          user: {
+            select: { username: true }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip,
+        take: parseInt(limit),
+      }),
+      prisma.auditLog.count({
+        where: {
+          tableName: {
+            in: ['WarehousePartyDispatch', 'WarehouseShopTransfer']
+          }
+        }
+      })
+    ]);
+
+    res.json({ logs, total, page: parseInt(page), limit: parseInt(limit) });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllPartyDispatches,
   createPartyDispatch,
@@ -346,4 +388,5 @@ module.exports = {
   createShopTransfer,
   updateShopTransfer,
   deleteShopTransfer,
+  getWarehouseActivityLogs,
 };
