@@ -24,10 +24,25 @@ const create = async (req, res, next) => {
     }
 
     const { username, password, role } = req.body;
+    const normalizedUsername = (username || '').trim().toLowerCase();
+
+    const existing = await prisma.user.findFirst({
+      where: {
+        username: {
+          equals: normalizedUsername,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: `User ID '${normalizedUsername}' is already taken.` });
+    }
+
     const passwordHash = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
-      data: { username, passwordHash, role: role || 'CASHIER' },
+      data: { username: normalizedUsername, passwordHash, role: role || 'CASHIER' },
       select: { id: true, username: true, role: true, isActive: true, createdAt: true },
     });
 
@@ -36,7 +51,7 @@ const create = async (req, res, next) => {
         action: 'CREATE_USER',
         tableName: 'User',
         recordId: user.id,
-        details: { username, role },
+        details: { username: normalizedUsername, role },
         userId: req.user.id,
       },
     });
@@ -61,10 +76,26 @@ const update = async (req, res, next) => {
       return res.status(400).json({ error: 'You cannot deactivate your own account.' });
     }
 
+    let normalizedUsername;
+    if (username) {
+      normalizedUsername = username.trim().toLowerCase();
+      const existing = await prisma.user.findFirst({
+        where: {
+          username: {
+            equals: normalizedUsername,
+            mode: 'insensitive',
+          },
+        },
+      });
+      if (existing && existing.id !== id) {
+        return res.status(400).json({ error: `User ID '${normalizedUsername}' is already taken.` });
+      }
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: {
-        ...(username && { username }),
+        ...(normalizedUsername && { username: normalizedUsername }),
         ...(role && { role }),
         ...(isActive !== undefined && { isActive }),
       },

@@ -13,9 +13,15 @@ const login = async (req, res, next) => {
     }
 
     const { username, password } = req.body;
+    const normalizedUsername = (username || '').trim().toLowerCase();
 
-    const user = await prisma.user.findUnique({
-      where: { username },
+    const user = await prisma.user.findFirst({
+      where: {
+        username: {
+          equals: normalizedUsername,
+          mode: 'insensitive',
+        },
+      },
     });
 
     if (!user || !user.isActive) {
@@ -84,7 +90,14 @@ const changeUsername = async (req, res, next) => {
     const trimmed = newUsername.trim().toLowerCase();
 
     // Check uniqueness
-    const existing = await prisma.user.findUnique({ where: { username: trimmed } });
+    const existing = await prisma.user.findFirst({
+      where: {
+        username: {
+          equals: trimmed,
+          mode: 'insensitive',
+        },
+      },
+    });
     if (existing && existing.id !== req.user.id) {
       return res.status(400).json({ error: 'Username is already taken.' });
     }

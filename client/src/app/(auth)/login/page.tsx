@@ -23,10 +23,20 @@ export default function LoginPage() {
     try {
       await login(username.trim().toLowerCase(), password);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed. Please check credentials.');
+      if (!err.response) {
+        setError('Cannot connect to backend server. Please make sure backend is running on http://localhost:4000.');
+      } else {
+        setError(err.response?.data?.error || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickFill = (u: string, p: string) => {
+    setUsername(u);
+    setPassword(p);
+    setError('');
   };
 
   return (
@@ -62,7 +72,7 @@ export default function LoginPage() {
             {/* Username Input */}
             <div className="space-y-1.5">
               <label htmlFor="username" className="text-xs font-semibold text-slate-300">
-                User ID
+                User ID (Username)
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
@@ -73,7 +83,7 @@ export default function LoginPage() {
                   name="username"
                   type="text"
                   required
-                  placeholder="Enter your user ID"
+                  placeholder="e.g. admin or cashier1"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full rounded-xl border border-slate-800 bg-slate-950/80 py-3 pl-11 pr-4 text-sm text-white placeholder-slate-500 outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
@@ -131,6 +141,39 @@ export default function LoginPage() {
               )}
             </button>
           </form>
+
+          {/* Quick Demo Fill Helper */}
+          <div className="mt-6 pt-5 border-t border-slate-800/80">
+            <p className="text-[11px] font-medium text-slate-400 mb-2.5 text-center">
+              Quick Demo Accounts (Click to autofill):
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickFill('admin', 'Admin@1234')}
+                className="flex flex-col items-center py-2 px-1.5 rounded-xl border border-indigo-500/20 bg-indigo-500/10 hover:bg-indigo-500/20 transition-all text-xs text-indigo-300"
+              >
+                <span className="font-bold text-[11px]">👑 Owner</span>
+                <span className="text-[10px] opacity-75 font-mono">admin</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('cashier1', 'Cashier@1234')}
+                className="flex flex-col items-center py-2 px-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all text-xs text-emerald-300"
+              >
+                <span className="font-bold text-[11px]">👤 Cashier</span>
+                <span className="text-[10px] opacity-75 font-mono">cashier1</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('warehouse1', 'Warehouse@1234')}
+                className="flex flex-col items-center py-2 px-1.5 rounded-xl border border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/20 transition-all text-xs text-amber-300"
+              >
+                <span className="font-bold text-[11px]">📦 Warehouse</span>
+                <span className="text-[10px] opacity-75 font-mono">warehouse1</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
