@@ -234,12 +234,12 @@ export default function PartyDispatchPage() {
   // ── Table columns ────────────────────────────────────────────────────────────
   const columns = [
     { header: 'Date', accessor: (r: PartyDispatchRecord) => formatDate(r.created_at.split('T')[0]) },
-    { header: 'Bill #', accessor: 'bill_number' as const },
-    { header: 'Challan #', accessor: 'challan_number' as const },
+    { header: 'Bill #', accessor: 'bill_number' as const, className: 'font-mono' },
+    { header: 'Challan #', accessor: 'challan_number' as const, className: 'font-mono' },
     { header: 'Party Name', accessor: 'party_name' as const },
     { header: 'Item / Product', accessor: 'item_name' as const },
-    { header: 'Qty', accessor: (r: PartyDispatchRecord) => <span className="font-semibold text-indigo-600 dark:text-indigo-400 font-mono">{r.quantity}</span> },
-    { header: 'Slip #', accessor: 'slip_number' as const },
+    { header: 'Qty', accessor: (r: PartyDispatchRecord) => <span className="font-semibold text-amber-700 dark:text-amber-400 font-mono">{r.quantity}</span> },
+    { header: 'Slip #', accessor: 'slip_number' as const, className: 'font-mono' },
     { header: 'By Person', accessor: 'by_person' as const },
     { header: 'Recorded By', accessor: (r: PartyDispatchRecord) => r.user?.username || 'N/A' },
     {
@@ -252,21 +252,21 @@ export default function PartyDispatchPage() {
               <>
                 <button
                   onClick={() => handleEditClick(row)}
-                  className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white dark:bg-indigo-500/20 dark:text-indigo-400 dark:hover:bg-indigo-500 transition-colors cursor-pointer"
+                  className="p-1 rounded-lg bg-amber-500/10 text-amber-700 hover:bg-amber-700 hover:text-white dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-600 transition-colors cursor-pointer"
                   title="Edit"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setDeleteRecord(row)}
-                  className="p-1 rounded bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 transition-colors cursor-pointer"
+                  className="p-1 rounded-lg bg-rose-500/10 text-rose-700 hover:bg-rose-700 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-600 transition-colors cursor-pointer"
                   title="Delete"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </>
             ) : (
-              <span className="text-xs text-slate-400 italic" title="No permission to edit this entry.">Submitted</span>
+              <span className="text-xs text-stone-400 italic" title="No permission to edit this entry.">Submitted</span>
             )}
           </div>
         );
@@ -280,11 +280,11 @@ export default function PartyDispatchPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
-            <Package className="w-6 h-6 text-indigo-500" />
-            Party Dispatch Register
+          <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight flex items-center gap-2">
+            <Package className="w-6 h-6 text-amber-700 dark:text-amber-500" />
+            <span>Party Dispatch Register</span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
             Log and track outbound dispatches to parties with bill and challan details.
           </p>
         </div>
@@ -293,7 +293,7 @@ export default function PartyDispatchPage() {
             <>
               <button
                 onClick={() => { setLogsPage(1); setLogsOpen(true); }}
-                className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium rounded-xl text-sm transition-all cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 border border-stone-200 dark:border-stone-800 bg-white hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium rounded-xl text-sm transition-all cursor-pointer"
               >
                 <span>Activity Logs</span>
               </button>
@@ -308,7 +308,7 @@ export default function PartyDispatchPage() {
           )}
           <button
             onClick={() => setCreateOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl text-sm transition-all cursor-pointer shadow-lg shadow-indigo-600/30"
+            className="flex items-center gap-2 px-4 py-2 bg-amber-700 hover:bg-amber-600 active:bg-amber-800 text-white font-semibold rounded-xl text-sm transition-all cursor-pointer shadow-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Add Entry</span>
@@ -317,10 +317,10 @@ export default function PartyDispatchPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Filters & Search</h3>
-          <button onClick={clearFilters} className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 transition-colors cursor-pointer">
+          <h3 className="text-sm font-bold text-stone-700 dark:text-stone-300">Filters & Search</h3>
+          <button onClick={clearFilters} className="text-xs font-semibold text-amber-700 hover:text-amber-600 dark:text-amber-400 transition-colors cursor-pointer">
             Clear All
           </button>
         </div>
@@ -332,9 +332,9 @@ export default function PartyDispatchPage() {
             { label: 'Slip Number', value: filterSlip, setter: setFilterSlip, placeholder: 'Search slip...' },
           ].map(({ label, value, setter, placeholder }) => (
             <div key={label} className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">{label}</span>
+              <span className="text-[10px] font-bold text-stone-400 uppercase">{label}</span>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-stone-400">
                   <Search className="w-3.5 h-3.5" />
                 </span>
                 <input
@@ -342,18 +342,18 @@ export default function PartyDispatchPage() {
                   placeholder={placeholder}
                   value={value}
                   onChange={(e) => { setter(e.target.value); setPage(1); }}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                  className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-amber-600 text-stone-900 dark:text-stone-100"
                 />
               </div>
             </div>
           ))}
           {isOwner && (
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Recorded By</span>
+              <span className="text-[10px] font-bold text-stone-400 uppercase">Recorded By</span>
               <select
                 value={filterUser}
                 onChange={(e) => { setFilterUser(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
               >
                 <option value="">All Users</option>
                 {usersList.map((u) => (
@@ -363,14 +363,14 @@ export default function PartyDispatchPage() {
             </div>
           )}
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Start Date</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">Start Date</span>
             <input type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900" />
+              className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100" />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">End Date</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">End Date</span>
             <input type="date" value={endDate} onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900" />
+              className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100" />
           </div>
         </div>
       </div>
@@ -391,48 +391,48 @@ export default function PartyDispatchPage() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Bill Number</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Bill Number</label>
               <input id="pd-bill-number" type="text" required placeholder="e.g. BILL-1001" value={billNumber} onChange={(e) => setBillNumber(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Challan Number</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Challan Number</label>
               <input id="pd-challan-number" type="text" required placeholder="e.g. CHN-2001" value={challanNumber} onChange={(e) => setChallanNumber(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Party Name</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Party Name</label>
               <input id="pd-party-name" type="text" required placeholder="e.g. Sharma Traders" value={partyName} onChange={(e) => setPartyName(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Item / Product Name</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Item / Product Name</label>
               <input id="pd-item-name" type="text" required placeholder="e.g. Cement Bags" value={itemName} onChange={(e) => setItemName(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Quantity</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Quantity</label>
               <input id="pd-quantity" type="number" required min="1" placeholder="e.g. 50" value={quantity} onChange={(e) => setQuantity(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 font-mono" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Slip Number (Unique)</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Slip Number (Unique)</label>
               <input id="pd-slip-number" type="text" required placeholder="e.g. SLIP-5001" value={slipNumber} onChange={(e) => setSlipNumber(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100" />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">By Person (Operator)</label>
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">By Person (Operator)</label>
               <input id="pd-by-person" type="text" required placeholder="e.g. Ramesh Kumar" value={byPerson} onChange={(e) => setByPerson(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100" />
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={() => { setCreateOpen(false); resetCreateForm(); }}
-              className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+              className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
               Cancel
             </button>
             <button type="submit" disabled={submitting}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+              className="flex items-center gap-2 px-4 py-2 bg-amber-700 hover:bg-amber-600 active:bg-amber-800 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60 shadow-sm">
               {submitting ? 'Saving...' : 'Submit Entry'}
             </button>
           </div>
@@ -443,35 +443,35 @@ export default function PartyDispatchPage() {
       <Modal isOpen={!!editRecord} onClose={() => setEditRecord(null)} title="Edit Party Dispatch Entry">
         {editRecord && (
           <form onSubmit={handleUpdate} className="space-y-4">
-            <p className="text-xs text-slate-500">Recorded by: <span className="font-semibold text-slate-700 dark:text-slate-300">{editRecord.user?.username}</span> on {formatDate(editRecord.created_at.split('T')[0])}</p>
+            <p className="text-xs text-stone-400">Recorded by: <span className="font-semibold text-stone-700 dark:text-stone-300">{editRecord.user?.username}</span> on {formatDate(editRecord.created_at.split('T')[0])}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { label: 'Bill Number', value: editBillNumber, setter: setEditBillNumber, id: 'edit-pd-bill' },
-                { label: 'Challan Number', value: editChallanNumber, setter: setEditChallanNumber, id: 'edit-pd-challan' },
-                { label: 'Party Name', value: editPartyName, setter: setEditPartyName, id: 'edit-pd-party' },
-                { label: 'Item / Product Name', value: editItemName, setter: setEditItemName, id: 'edit-pd-item' },
-                { label: 'Slip Number', value: editSlipNumber, setter: setEditSlipNumber, id: 'edit-pd-slip' },
-                { label: 'By Person', value: editByPerson, setter: setEditByPerson, id: 'edit-pd-person' },
-              ].map(({ label, value, setter, id }) => (
+                { label: 'Bill Number', value: editBillNumber, setter: setEditBillNumber, id: 'edit-pd-bill', mono: true },
+                { label: 'Challan Number', value: editChallanNumber, setter: setEditChallanNumber, id: 'edit-pd-challan', mono: true },
+                { label: 'Party Name', value: editPartyName, setter: setEditPartyName, id: 'edit-pd-party', mono: false },
+                { label: 'Item / Product Name', value: editItemName, setter: setEditItemName, id: 'edit-pd-item', mono: false },
+                { label: 'Slip Number', value: editSlipNumber, setter: setEditSlipNumber, id: 'edit-pd-slip', mono: true },
+                { label: 'By Person', value: editByPerson, setter: setEditByPerson, id: 'edit-pd-person', mono: false },
+              ].map(({ label, value, setter, id, mono }) => (
                 <div key={id} className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">{label}</label>
+                  <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">{label}</label>
                   <input id={id} type="text" required value={value} onChange={(e) => setter(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+                    className={`w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100 ${mono ? 'font-mono' : ''}`} />
                 </div>
               ))}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Quantity</label>
+                <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">Quantity</label>
                 <input id="edit-pd-quantity" type="number" required min="1" value={editQuantity} onChange={(e) => setEditQuantity(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 font-mono" />
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100" />
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" onClick={() => setEditRecord(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
-                Cancel
-              </button>
+                className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+              Cancel
+            </button>
               <button type="submit" disabled={editSubmitting}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+                className="px-4 py-2 bg-amber-700 hover:bg-amber-600 active:bg-amber-800 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60 shadow-sm">
                 {editSubmitting ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
@@ -483,22 +483,22 @@ export default function PartyDispatchPage() {
       <Modal isOpen={!!deleteRecord} onClose={() => setDeleteRecord(null)} title="Confirm Deletion">
         {deleteRecord && (
           <div className="space-y-4">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
               Are you sure you want to permanently delete this party dispatch record?
             </p>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
-              <div><span className="font-semibold text-slate-500">Slip #:</span>{' '}<span className="font-mono text-slate-800 dark:text-slate-200">{deleteRecord.slip_number}</span></div>
-              <div><span className="font-semibold text-slate-500">Party:</span>{' '}<span className="text-slate-800 dark:text-slate-200">{deleteRecord.party_name}</span></div>
-              <div><span className="font-semibold text-slate-500">Item:</span>{' '}<span className="text-slate-800 dark:text-slate-200">{deleteRecord.item_name}</span></div>
-              <div><span className="font-semibold text-slate-500">Quantity:</span>{' '}<span className="font-semibold text-indigo-600 dark:text-indigo-400">{deleteRecord.quantity}</span></div>
+            <div className="p-4 bg-stone-50 dark:bg-stone-800/40 rounded-xl border border-stone-200 dark:border-stone-800 text-xs space-y-2">
+              <div><span className="font-semibold text-stone-500">Slip #:</span>{' '}<span className="font-mono text-stone-800 dark:text-stone-200">{deleteRecord.slip_number}</span></div>
+              <div><span className="font-semibold text-stone-500">Party:</span>{' '}<span className="text-stone-800 dark:text-stone-200">{deleteRecord.party_name}</span></div>
+              <div><span className="font-semibold text-stone-500">Item:</span>{' '}<span className="text-stone-800 dark:text-stone-200">{deleteRecord.item_name}</span></div>
+              <div><span className="font-semibold text-stone-500">Quantity:</span>{' '}<span className="font-semibold text-amber-700 dark:text-amber-400 font-mono">{deleteRecord.quantity}</span></div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" onClick={() => setDeleteRecord(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+                className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
                 Cancel
               </button>
               <button onClick={handleDelete} disabled={deleteSubmitting}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60 shadow-sm">
                 {deleteSubmitting ? 'Deleting...' : 'Delete Record'}
               </button>
             </div>
@@ -517,9 +517,9 @@ export default function PartyDispatchPage() {
                 header: 'Action',
                 accessor: (row: any) => (
                   <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
-                    row.action === 'CREATE' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                    row.action === 'UPDATE' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
-                    'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                    row.action === 'CREATE' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' :
+                    row.action === 'UPDATE' ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400' :
+                    'bg-rose-500/10 text-rose-700 dark:text-rose-400'
                   }`}>
                     {row.action}
                   </span>

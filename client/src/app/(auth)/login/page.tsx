@@ -33,11 +33,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleQuickFill = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-    setError('');
-  };
+
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 font-sans">
@@ -142,38 +138,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Fill Helper */}
-          <div className="mt-6 pt-5 border-t border-slate-800/80">
-            <p className="text-[11px] font-medium text-slate-400 mb-2.5 text-center">
-              Quick Demo Accounts (Click to autofill):
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickFill('admin', 'Admin@1234')}
-                className="flex flex-col items-center py-2 px-1.5 rounded-xl border border-indigo-500/20 bg-indigo-500/10 hover:bg-indigo-500/20 transition-all text-xs text-indigo-300"
-              >
-                <span className="font-bold text-[11px]">👑 Owner</span>
-                <span className="text-[10px] opacity-75 font-mono">admin</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill('cashier1', 'Cashier@1234')}
-                className="flex flex-col items-center py-2 px-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all text-xs text-emerald-300"
-              >
-                <span className="font-bold text-[11px]">👤 Cashier</span>
-                <span className="text-[10px] opacity-75 font-mono">cashier1</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill('warehouse1', 'Warehouse@1234')}
-                className="flex flex-col items-center py-2 px-1.5 rounded-xl border border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/20 transition-all text-xs text-amber-300"
-              >
-                <span className="font-bold text-[11px]">📦 Warehouse</span>
-                <span className="text-[10px] opacity-75 font-mono">warehouse1</span>
-              </button>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

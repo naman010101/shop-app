@@ -244,12 +244,12 @@ export default function BalanceManagementPage() {
         header: 'Verification Status',
         accessor: (row: BalanceRecord) => {
           const styles = {
-            APPROVED: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-            FLAGGED: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-            UNVERIFIED: 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+            APPROVED: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+            FLAGGED: 'bg-rose-500/10 text-rose-700 dark:text-rose-400',
+            UNVERIFIED: 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
           };
           return (
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${styles[row.status]}`}>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${styles[row.status]}`}>
               {row.status === 'APPROVED' && <Check className="w-3 h-3 mr-1" />}
               {row.status === 'FLAGGED' && <AlertTriangle className="w-3 h-3 mr-1" />}
               {row.status === 'UNVERIFIED' && <Hourglass className="w-3 h-3 mr-1" />}
@@ -264,48 +264,48 @@ export default function BalanceManagementPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
-            <Wallet className="w-6 h-6 text-indigo-500" />
+          <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight flex items-center gap-2">
+            <Wallet className="w-6 h-6 text-amber-700 dark:text-amber-500" />
             <span>Balance Desk</span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
             Submit shift balances and view historical tallies for your user.
           </p>
         </div>
 
         {/* 1. Shift Balance widget */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+        <section className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-stone-100 dark:border-stone-800 pb-4">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400">
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-50">
+                <h2 className="text-lg font-bold font-serif text-stone-900 dark:text-stone-50">
                   Shift Balance Entry
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-stone-400">
                   Submit starting shift cash and closing counter physical tallies
                 </p>
               </div>
             </div>
             {record && (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-slate-400">Verification:</span>
+                <span className="text-xs font-medium text-stone-400">Verification:</span>
                 {record.status === 'APPROVED' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
                     <Check className="w-3 h-3" />
                     Approved
                   </span>
                 )}
                 {record.status === 'FLAGGED' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400" title={record.remarks || undefined}>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-700 dark:text-rose-400" title={record.remarks || undefined}>
                     <AlertTriangle className="w-3 h-3" />
                     Flagged
                   </span>
                 )}
                 {record.status === 'UNVERIFIED' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400">
                     <Hourglass className="w-3 h-3" />
                     Pending Review
                   </span>
@@ -315,7 +315,7 @@ export default function BalanceManagementPage() {
           </div>
 
           {record?.status === 'FLAGGED' && record.remarks && (
-            <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-xl flex gap-2 text-xs text-rose-600 dark:text-rose-400">
+            <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-xl flex gap-2 text-xs text-rose-700 dark:text-rose-400">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <div>
                 <span className="font-semibold">Owner Flagged with notes:</span> {record.remarks}
@@ -325,21 +325,21 @@ export default function BalanceManagementPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Opening Balance */}
-            <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col justify-between min-h-[160px]">
+            <div className="p-5 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50 flex flex-col justify-between min-h-[160px]">
               {!hasOpening ? (
                 <form onSubmit={handleStaffOpeningSubmit} className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-emerald-500" />
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                    <Coins className="w-4 h-4 text-emerald-600" />
+                    <span className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
                       1. Opening Balance
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-stone-400 leading-normal">
                     Enter starting register cash before shift transactions begin.
                   </p>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-semibold">₹</span>
+                      <span className="absolute left-3 top-2.5 text-stone-400 text-sm font-semibold">₹</span>
                       <input
                         type="number"
                         step="0.01"
@@ -348,13 +348,13 @@ export default function BalanceManagementPage() {
                         placeholder="0.00"
                         value={openingInput}
                         onChange={(e) => setOpeningInput(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2 pl-6 pr-3 text-sm outline-hidden focus:border-indigo-500 font-mono"
+                        className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 py-2 pl-6 pr-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={submittingOpening}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                      className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
                     >
                       {submittingOpening ? 'Saving...' : 'Submit'}
                     </button>
@@ -364,20 +364,20 @@ export default function BalanceManagementPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Coins className="w-4 h-4 text-emerald-500" />
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <Coins className="w-4 h-4 text-emerald-600" />
+                      <span className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
                         1. Opening Balance
                       </span>
                     </div>
-                    <span className="inline-flex px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
+                    <span className="inline-flex px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-semibold text-[10px]">
                       Shift Started
                     </span>
                   </div>
                   <div>
-                    <div className="text-2xl font-black text-slate-900 dark:text-slate-50 font-mono">
+                    <div className="text-2xl font-black text-stone-900 dark:text-stone-50 font-mono">
                       {formatCurrency(record.openingBalance)}
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1">
+                    <p className="text-[10px] text-stone-400 mt-1">
                       Submitted today at {formatTime(record.openingTime)}
                     </p>
                   </div>
@@ -388,31 +388,31 @@ export default function BalanceManagementPage() {
             {/* Closing Balance */}
             <div className={`p-5 rounded-2xl border flex flex-col justify-between min-h-[160px] transition-all duration-300 ${
               !hasOpening
-                ? 'border-dashed border-slate-200 dark:border-slate-800 opacity-60'
-                : 'border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50'
+                ? 'border-dashed border-stone-200 dark:border-stone-800 opacity-60'
+                : 'border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50'
             }`}>
               {!hasOpening ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
-                  <Lock className="w-6 h-6 text-slate-300 dark:text-slate-700" />
-                  <p className="text-xs text-slate-400 font-medium">Closing Tally Locked</p>
-                  <p className="text-[10px] text-slate-400 max-w-[200px]">
+                  <Lock className="w-6 h-6 text-stone-300 dark:text-stone-700" />
+                  <p className="text-xs text-stone-400 font-medium">Closing Tally Locked</p>
+                  <p className="text-[10px] text-stone-400 max-w-[200px]">
                     Submit opening balance at shift start to activate.
                   </p>
                 </div>
               ) : !hasClosing ? (
                 <form onSubmit={handleStaffClosingSubmit} className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-indigo-500" />
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                    <Coins className="w-4 h-4 text-amber-700 dark:text-amber-500" />
+                    <span className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
                       2. Closing Balance
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-stone-400 leading-normal">
                     Count physical cash at shift end and submit for audit.
                   </p>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-semibold">₹</span>
+                      <span className="absolute left-3 top-2.5 text-stone-400 text-sm font-semibold">₹</span>
                       <input
                         type="number"
                         step="0.01"
@@ -421,13 +421,13 @@ export default function BalanceManagementPage() {
                         placeholder="0.00"
                         value={closingInput}
                         onChange={(e) => setClosingInput(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2 pl-6 pr-3 text-sm outline-hidden focus:border-indigo-500 font-mono"
+                        className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 py-2 pl-6 pr-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={submittingClosing}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                      className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
                     >
                       {submittingClosing ? 'Saving...' : 'Submit'}
                     </button>
@@ -437,20 +437,20 @@ export default function BalanceManagementPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Coins className="w-4 h-4 text-indigo-500" />
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <Coins className="w-4 h-4 text-amber-700 dark:text-amber-500" />
+                      <span className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
                         2. Closing Balance
                       </span>
                     </div>
-                    <span className="inline-flex px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px]">
+                    <span className="inline-flex px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 font-semibold text-[10px]">
                       Shift Closed
                     </span>
                   </div>
                   <div>
-                    <div className="text-2xl font-black text-slate-900 dark:text-slate-50 font-mono">
+                    <div className="text-2xl font-black text-stone-900 dark:text-stone-50 font-mono">
                       {formatCurrency(record.closingBalance || 0)}
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1">
+                    <p className="text-[10px] text-stone-400 mt-1">
                       Submitted today at {formatTime(record.closingTime || '')}
                     </p>
                   </div>
@@ -463,7 +463,7 @@ export default function BalanceManagementPage() {
         {/* 2. Today's Totals Section */}
         {hasOpening && totals && (
           <section className="space-y-3">
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-50">
+            <h3 className="text-base font-bold font-serif text-stone-900 dark:text-stone-50">
               Shift Cumulative Activity (Today)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -483,7 +483,7 @@ export default function BalanceManagementPage() {
                 title="Shift Book Value"
                 value={formatCurrency(record.openingBalance + totals.inflows + totals.sales - totals.outflows)}
                 icon={<Wallet className="w-5 h-5" />}
-                color="indigo"
+                color="amber"
               />
             </div>
           </section>
@@ -491,8 +491,8 @@ export default function BalanceManagementPage() {
 
         {/* 3. Staff Balance History */}
         <section className="space-y-3">
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
-            <History className="w-4 h-4 text-slate-400" />
+          <h3 className="text-base font-bold font-serif text-stone-900 dark:text-stone-50 flex items-center gap-2">
+            <History className="w-4 h-4 text-stone-400" />
             <span>My Shift History</span>
           </h3>
           <DataTable
@@ -511,7 +511,7 @@ export default function BalanceManagementPage() {
     {
       header: 'Staff User',
       accessor: (row: BalanceRecord) => (
-        <span className="font-semibold text-slate-800 dark:text-slate-200">
+        <span className="font-semibold text-stone-800 dark:text-stone-200">
           {row.user?.username}
         </span>
       )
@@ -522,7 +522,7 @@ export default function BalanceManagementPage() {
       accessor: (row: BalanceRecord) => (
         <div className="text-xs">
           <span className="font-semibold font-mono">{formatCurrency(row.openingBalance)}</span>
-          <span className="block text-[10px] text-slate-400">{formatTime(row.openingTime)}</span>
+          <span className="block text-[10px] text-stone-400">{formatTime(row.openingTime)}</span>
         </div>
       )
     },
@@ -531,14 +531,14 @@ export default function BalanceManagementPage() {
       accessor: (row: BalanceRecord) => (
         <div className="text-xs">
           <span className="font-semibold font-mono">{row.closingBalance !== null ? formatCurrency(row.closingBalance) : '—'}</span>
-          {row.closingTime && <span className="block text-[10px] text-slate-400">{formatTime(row.closingTime)}</span>}
+          {row.closingTime && <span className="block text-[10px] text-stone-400">{formatTime(row.closingTime)}</span>}
         </div>
       )
     },
     {
       header: 'Register Inflows',
       accessor: (row: BalanceRecord) => (
-        <div className="text-xs font-mono text-slate-600 dark:text-slate-400">
+        <div className="text-xs font-mono text-stone-600 dark:text-stone-400">
           <div>In: {formatCurrency(row.totalInflow)}</div>
           <div>Sales: {formatCurrency(row.totalSales)}</div>
         </div>
@@ -547,13 +547,13 @@ export default function BalanceManagementPage() {
     {
       header: 'Register Outflows',
       accessor: (row: BalanceRecord) => (
-        <span className="font-mono text-rose-600 dark:text-rose-400">{formatCurrency(row.totalOutflow)}</span>
+        <span className="font-mono text-rose-700 dark:text-rose-400 font-semibold">{formatCurrency(row.totalOutflow)}</span>
       )
     },
     {
       header: 'Expected Closing Bal.',
       accessor: (row: BalanceRecord) => (
-        <span className="font-semibold font-mono text-slate-700 dark:text-slate-300">
+        <span className="font-semibold font-mono text-stone-800 dark:text-stone-200">
           {formatCurrency(row.expectedClosingBalance)}
         </span>
       )
@@ -561,12 +561,12 @@ export default function BalanceManagementPage() {
     {
       header: 'Difference',
       accessor: (row: BalanceRecord) => {
-        if (row.variance === null) return <span className="text-slate-400 italic">Unclosed</span>;
+        if (row.variance === null) return <span className="text-stone-400 italic">Unclosed</span>;
         const color = row.variance === 0 
-          ? 'text-emerald-600 dark:text-emerald-400 font-semibold' 
+          ? 'text-emerald-700 dark:text-emerald-400 font-semibold' 
           : row.variance > 0
-          ? 'text-amber-500 dark:text-amber-400 font-semibold'
-          : 'text-rose-600 dark:text-rose-400 font-semibold';
+          ? 'text-amber-700 dark:text-amber-400 font-semibold'
+          : 'text-rose-700 dark:text-rose-400 font-semibold';
         
         const label = row.variance === 0 
           ? 'Balanced' 
@@ -587,7 +587,7 @@ export default function BalanceManagementPage() {
       accessor: (row: BalanceRecord) => {
         if (row.variance === null) {
           return (
-            <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+            <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400">
               OPEN
             </span>
           );
@@ -595,7 +595,7 @@ export default function BalanceManagementPage() {
         
         if (row.variance === 0) {
           return (
-            <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
               Balanced
             </span>
           );
@@ -603,14 +603,14 @@ export default function BalanceManagementPage() {
         
         if (row.variance > 0) {
           return (
-            <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400">
               Excess Cash
             </span>
           );
         }
         
         return (
-          <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400">
+          <span className="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-700 dark:text-rose-400">
             Cash Shortage
           </span>
         );
@@ -620,9 +620,9 @@ export default function BalanceManagementPage() {
       header: 'Admin Verif.',
       accessor: (row: BalanceRecord) => {
         const styles = {
-          APPROVED: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-          FLAGGED: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-          UNVERIFIED: 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+          APPROVED: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+          FLAGGED: 'bg-rose-500/10 text-rose-700 dark:text-rose-400',
+          UNVERIFIED: 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
         };
         return (
           <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold ${styles[row.status]}`}>
@@ -638,25 +638,25 @@ export default function BalanceManagementPage() {
           <button
             onClick={() => handleVerifyClick(row, 'APPROVED')}
             disabled={row.status === 'APPROVED'}
-            className="p-1 rounded bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 transition-colors disabled:opacity-30 cursor-pointer"
+            className="p-1 rounded-lg bg-emerald-500/10 text-emerald-700 hover:bg-emerald-700 hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-600 transition-colors disabled:opacity-30 cursor-pointer"
             title="Approve Tally"
           >
-            <Check className="w-3 h-3" />
+            <Check className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => handleVerifyClick(row, 'FLAGGED')}
             disabled={row.status === 'FLAGGED'}
-            className="p-1 rounded bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 transition-colors disabled:opacity-30 cursor-pointer"
+            className="p-1 rounded-lg bg-rose-500/10 text-rose-700 hover:bg-rose-700 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-600 transition-colors disabled:opacity-30 cursor-pointer"
             title="Flag/Mark Mismatch"
           >
-            <AlertTriangle className="w-3 h-3" />
+            <AlertTriangle className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => handleEditClick(row)}
-            className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white dark:bg-indigo-500/20 dark:text-indigo-400 dark:hover:bg-indigo-500 transition-colors cursor-pointer"
+            className="p-1 rounded-lg bg-amber-500/10 text-amber-700 hover:bg-amber-700 hover:text-white dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-600 transition-colors cursor-pointer"
             title="Modify Balances (Audit-Logged)"
           >
-            <Edit2 className="w-3 h-3" />
+            <Edit2 className="w-3.5 h-3.5" />
           </button>
         </div>
       ),
@@ -670,7 +670,7 @@ export default function BalanceManagementPage() {
     {
       header: 'Action Done',
       accessor: (row: AuditLog) => (
-        <span className="font-bold text-xs uppercase text-indigo-500 tracking-wider">
+        <span className="font-bold text-xs uppercase text-amber-700 dark:text-amber-500 tracking-wider">
           {row.action}
         </span>
       )
@@ -709,24 +709,24 @@ export default function BalanceManagementPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
-          <Wallet className="w-6 h-6 text-indigo-500" />
+        <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight flex items-center gap-2">
+          <Wallet className="w-6 h-6 text-amber-700 dark:text-amber-500" />
           <span>Balance Reconciliation & Audit Desk</span>
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
           Verify staff opening/closing register entries, cross-reference ledger aggregates, and audit system adjustments.
         </p>
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+          <h3 className="text-sm font-bold text-stone-700 dark:text-stone-300">
             Reconciliation Parameters
           </h3>
           <button
             onClick={clearFilters}
-            className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 transition-colors cursor-pointer"
+            className="text-xs font-semibold text-amber-700 hover:text-amber-600 dark:text-amber-400 transition-colors cursor-pointer"
           >
             Clear Filters
           </button>
@@ -734,29 +734,29 @@ export default function BalanceManagementPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Start Date</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">Start Date</span>
             <input
               type="date"
               value={filterStartDate}
               onChange={(e) => setFilterStartDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
             />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">End Date</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">End Date</span>
             <input
               type="date"
               value={filterEndDate}
               onChange={(e) => setFilterEndDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
             />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Staff Member</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">Staff Member</span>
             <select
               value={filterUser}
               onChange={(e) => setFilterUser(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
             >
               <option value="">All Staff</option>
               {usersList.map((u) => (
@@ -765,11 +765,11 @@ export default function BalanceManagementPage() {
             </select>
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Status</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">Status</span>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
             >
               <option value="">All Statuses</option>
               <option value="UNVERIFIED">UNVERIFIED</option>
@@ -786,7 +786,7 @@ export default function BalanceManagementPage() {
           title="Total Opening Cash"
           value={formatCurrency(totalOpening)}
           icon={<Coins className="w-5 h-5" />}
-          color="indigo"
+          color="amber"
         />
         <KPICard
           title="Total Expected Cash"
@@ -810,13 +810,13 @@ export default function BalanceManagementPage() {
 
       {/* Tabs */}
       <div className="space-y-4">
-        <div className="flex border-b border-slate-200 dark:border-slate-800">
+        <div className="flex border-b border-stone-200 dark:border-stone-800">
           <button
             onClick={() => setActiveTab('reconciliation')}
             className={`px-4 py-2 border-b-2 font-semibold text-sm whitespace-nowrap transition-colors cursor-pointer ${
               activeTab === 'reconciliation'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                ? 'border-amber-700 text-amber-700 dark:border-amber-500 dark:text-amber-400'
+                : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
             }`}
           >
             Balance Reconciliation List
@@ -825,8 +825,8 @@ export default function BalanceManagementPage() {
             onClick={() => setActiveTab('audit')}
             className={`px-4 py-2 border-b-2 font-semibold text-sm whitespace-nowrap transition-colors cursor-pointer ${
               activeTab === 'audit'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                ? 'border-amber-700 text-amber-700 dark:border-amber-500 dark:text-amber-400'
+                : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
             }`}
           >
             Balance Audit Trails
@@ -858,33 +858,33 @@ export default function BalanceManagementPage() {
       >
         {selectedRecord && (
           <form onSubmit={handleVerifySubmit} className="space-y-4">
-            <p className="text-xs text-slate-500">
-              Submit verification details for shift balance logged by <span className="font-semibold text-slate-700 dark:text-slate-300">{selectedRecord.user?.username}</span> on <span className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(selectedRecord.date)}</span>.
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Submit verification details for shift balance logged by <span className="font-semibold text-stone-800 dark:text-stone-200">{selectedRecord.user?.username}</span> on <span className="font-semibold text-stone-800 dark:text-stone-200">{formatDate(selectedRecord.date)}</span>.
             </p>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl space-y-1.5 text-xs">
+            <div className="p-4 bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-800 rounded-xl space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Opening Balance:</span>
-                <span className="font-semibold font-mono">{formatCurrency(selectedRecord.openingBalance)}</span>
+                <span className="text-stone-400">Opening Balance:</span>
+                <span className="font-semibold font-mono text-stone-800 dark:text-stone-200">{formatCurrency(selectedRecord.openingBalance)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Actual Closing Balance:</span>
-                <span className="font-semibold font-mono">{selectedRecord.closingBalance !== null ? formatCurrency(selectedRecord.closingBalance) : '—'}</span>
+                <span className="text-stone-400">Actual Closing Balance:</span>
+                <span className="font-semibold font-mono text-stone-800 dark:text-stone-200">{selectedRecord.closingBalance !== null ? formatCurrency(selectedRecord.closingBalance) : '—'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Expected Closing Balance:</span>
-                <span className="font-semibold font-mono">{formatCurrency(selectedRecord.expectedClosingBalance)}</span>
+                <span className="text-stone-400">Expected Closing Balance:</span>
+                <span className="font-semibold font-mono text-stone-800 dark:text-stone-200">{formatCurrency(selectedRecord.expectedClosingBalance)}</span>
               </div>
-              <div className="flex justify-between border-t border-slate-100 dark:border-slate-800 pt-1.5 font-bold">
-                <span className="text-slate-500">Difference/Variance:</span>
-                <span className={selectedRecord.variance === 0 ? 'text-emerald-600' : 'text-rose-600'}>
+              <div className="flex justify-between border-t border-stone-200 dark:border-stone-700 pt-2 font-bold">
+                <span className="text-stone-500">Difference/Variance:</span>
+                <span className={`font-mono ${selectedRecord.variance === 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
                   {selectedRecord.variance !== null ? formatCurrency(selectedRecord.variance) : '—'}
                 </span>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Admin Remarks/Audit Notes (Optional for Approval, Recommended for Flagging)
               </label>
               <textarea
@@ -892,7 +892,7 @@ export default function BalanceManagementPage() {
                 onChange={(e) => setAdminRemarks(e.target.value)}
                 placeholder="Enter remarks here..."
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100"
               />
             </div>
 
@@ -900,17 +900,17 @@ export default function BalanceManagementPage() {
               <button
                 type="button"
                 onClick={() => setSelectedRecord(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={actionSubmitting}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors cursor-pointer shadow-sm ${
                   actionStatus === 'APPROVED'
-                    ? 'bg-emerald-600 hover:bg-emerald-500'
-                    : 'bg-rose-600 hover:bg-rose-500'
+                    ? 'bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800'
+                    : 'bg-rose-700 hover:bg-rose-600 active:bg-rose-800'
                 }`}
               >
                 {actionSubmitting ? 'Saving...' : actionStatus === 'APPROVED' ? 'Approve Record' : 'Flag Record'}
@@ -928,13 +928,13 @@ export default function BalanceManagementPage() {
       >
         {selectedRecord && (
           <form onSubmit={handleEditSubmit} className="space-y-4">
-            <p className="text-xs text-rose-500 flex items-center gap-1">
+            <p className="text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
               <span>WARNING: Overriding register values manually will write to audit trails.</span>
             </p>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Opening Balance (INR)
               </label>
               <input
@@ -944,12 +944,12 @@ export default function BalanceManagementPage() {
                 required
                 value={editOpening}
                 onChange={(e) => setEditOpening(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500 font-mono"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Closing Balance (INR, Optional if shift is open)
               </label>
               <input
@@ -959,12 +959,12 @@ export default function BalanceManagementPage() {
                 value={editClosing}
                 onChange={(e) => setEditClosing(e.target.value)}
                 placeholder="Unclosed"
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500 font-mono"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Override Reason (Mandatory Audit Entry)
               </label>
               <textarea
@@ -973,7 +973,7 @@ export default function BalanceManagementPage() {
                 onChange={(e) => setAdminRemarks(e.target.value)}
                 placeholder="Explain why balances are being modified..."
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100"
               />
             </div>
 
@@ -981,14 +981,14 @@ export default function BalanceManagementPage() {
               <button
                 type="button"
                 onClick={() => setSelectedRecord(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={actionSubmitting || !adminRemarks.trim()}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-amber-700 hover:bg-amber-600 active:bg-amber-800 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 shadow-sm"
               >
                 {actionSubmitting ? 'Overriding...' : 'Save Manual Override'}
               </button>
