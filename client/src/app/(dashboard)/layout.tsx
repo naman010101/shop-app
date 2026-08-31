@@ -41,10 +41,10 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#FAF7F2] dark:bg-stone-950 text-amber-700">
+      <div className="flex h-screen w-screen items-center justify-center bg-background text-primary">
         <div className="flex flex-col items-center gap-2">
-          <div className="w-8 h-8 border-4 border-amber-700 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-semibold text-stone-500 mt-2">Verifying session...</span>
+          <div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-semibold text-muted-foreground mt-2">Verifying session...</span>
         </div>
       </div>
     );
@@ -64,75 +64,79 @@ export default function DashboardLayout({
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] dark:bg-stone-950 transition-colors duration-200 flex flex-col">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-200 flex flex-col">
       {/* Mobile Sidebar */}
       <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
-      {/* Header */}
-      <header className="sticky top-0 z-30 flex flex-col w-full bg-stone-950">
-        <div className="flex h-16 items-center justify-between px-4 lg:px-8 border-b border-stone-800">
-          <div className="flex items-center gap-4">
+      {/* Warm Cream Floating Top Header matching reference design */}
+      <header className="mx-auto w-full max-w-6xl px-6 pt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden p-1.5 rounded-lg text-stone-400 hover:bg-stone-800 cursor-pointer"
+              className="lg:hidden p-2 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground cursor-pointer shadow-pill"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="size-5" />
             </button>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-600 flex items-center justify-center text-white font-bold text-lg font-sans">
+            <Link href="/dashboard" className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-full bg-card text-lg font-bold text-foreground shadow-pill">
                 ₹
-              </div>
-              <div className="flex flex-col hidden sm:flex">
-                <span className="text-lg font-serif font-medium text-white">
+              </span>
+              <span>
+                <span className="block font-display text-2xl leading-none tracking-tight">
                   Cash Terminal
                 </span>
-                <span className="text-xs text-stone-400">
-                  Shop ledger • Main store
+                <span className="mt-1 block text-xs text-muted-foreground">
+                  Shop ledger · Main store
                 </span>
-              </div>
-            </div>
+              </span>
+            </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center justify-center px-3 py-1 bg-emerald-700/20 text-emerald-400 rounded-full text-sm font-medium border border-emerald-700/30">
+          <div className="flex items-center gap-3">
+            <span className="num hidden sm:flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs shadow-pill">
+              <span className="size-1.5 rounded-full bg-chart-1" />
               {currentDate}
-            </div>
+            </span>
             <ThemeToggle />
-            <button className="hidden sm:flex items-center gap-1.5 bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">
-              <Plus className="w-4 h-4" />
+            <button className="hidden sm:flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-pill transition-colors hover:bg-primary/90 cursor-pointer">
+              <Plus className="size-4" />
               New Entry
             </button>
-            <div className="h-9 w-9 rounded-full bg-amber-700/20 text-amber-500 border border-amber-700/30 flex items-center justify-center font-bold text-sm uppercase">
-              {user.username.slice(0, 2)}
-            </div>
+            <span className="flex size-10 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
+              {user.username.slice(0, 2).toUpperCase()}
+            </span>
           </div>
         </div>
 
-        {/* Tab Bar Navigation (Desktop) */}
-        <div className="hidden lg:flex items-center gap-1 px-8 py-2 overflow-x-auto bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 no-scrollbar">
-          {filteredNavigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  'px-4 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-colors',
-                  isActive
-                    ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
-                )}
-              >
-                {item.name}
-              </Link>
-            );
-          })}
-        </div>
+        {/* Tab Bar Navigation (Floating Pill Container) */}
+        <nav className="mt-6 overflow-x-auto rounded-full border border-border bg-card px-3 py-2 shadow-pill">
+          <ul className="flex items-center gap-1 whitespace-nowrap">
+            {filteredNavigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'inline-block rounded-full px-4 py-2 text-sm transition-colors',
+                      isActive
+                        ? 'bg-accent font-medium text-accent-foreground'
+                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </header>
 
       {/* Main Content Layout */}
-      <div className="flex flex-col flex-1 min-h-screen">
-        <main className="flex-1 p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
+      <div className="flex flex-col flex-1">
+        <main className="flex-1 px-6 py-8 max-w-6xl w-full mx-auto">
           {children}
         </main>
       </div>

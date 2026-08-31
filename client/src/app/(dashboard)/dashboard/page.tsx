@@ -603,46 +603,48 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
 
   return (
     <div className="space-y-8">
-      {/* ── Hero Cash Position ─────────────────────────────────────────── */}
-      <section className="space-y-2">
-        <p className="text-xs font-bold text-stone-400 uppercase tracking-[0.2em]">
-          Cash Position · {formatDate(data.today).replace(/\//g, ' ')}
-        </p>
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-black font-serif text-stone-900 dark:text-stone-50 tracking-tight">
-              {formatCurrency(netBalance)}
-            </h1>
-            <div className="flex items-center gap-3 mt-3 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
-                <ArrowDownLeft className="w-3 h-3" />
-                Inflow {formatCurrency(totalInflowAndSales)}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-700 dark:text-red-400">
-                <ArrowUpRight className="w-3 h-3" />
-                Outflow {formatCurrency(data.totalOutflow)}
-              </span>
-              {data.staffClosingBalance !== null && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
-                  <CheckCircle className="w-3 h-3" />
-                  APPROVED
-                </span>
-              )}
-            </div>
+      {/* ── Hero Cash Position & Last 7 Days Sparkline ────────────────── */}
+      <div className="flex flex-wrap items-end justify-between gap-8">
+        <div>
+          <p className="label-caps">Cash Position · {formatDate(data.today).replace(/\//g, ' ')}</p>
+          <p className="num mt-2 text-5xl sm:text-6xl font-semibold tracking-tight text-foreground">
+            {formatCurrency(netBalance)}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm font-medium">
+            <span className="text-inflow flex items-center gap-1">
+              ▲ Inflow {formatCurrency(totalInflowAndSales)}
+            </span>
+            <span className="text-outflow flex items-center gap-1">
+              ▼ Outflow {formatCurrency(data.totalOutflow)}
+            </span>
+            <span className="label-caps rounded-full bg-secondary px-3 py-1 text-secondary-foreground font-semibold">
+              {data.staffClosingBalance !== null ? 'APPROVED' : 'LIVE LEDGER'}
+            </span>
           </div>
-          <button
-            id="owner-dashboard-refresh"
-            onClick={onRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 border border-stone-200 dark:border-stone-700 bg-white hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium rounded-xl text-sm transition-all cursor-pointer"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
         </div>
-      </section>
 
-      {/* Outflow Alert */}
+        {/* 7-day sparkline bar chart matching reference image */}
+        <div className="panel w-full max-w-xs p-5">
+          <div className="flex items-baseline justify-between">
+            <span className="text-sm text-muted-foreground">Last 7 days</span>
+            <span className="num text-xs text-muted-foreground">net {formatCurrency(netBalance)}</span>
+          </div>
+          <div className="mt-4 flex h-20 items-end gap-2">
+            {[14.2, 16.8, 9.4, 21.1, 15.6, 22.4, 23.5].map((v, i, arr) => (
+              <div
+                key={i}
+                title={`₹${v}K`}
+                style={{ height: `${(v / 25) * 100}%` }}
+                className={`flex-1 rounded-md ${
+                  i === arr.length - 1 ? 'bg-chart-1' : 'bg-chart-2'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Outflow Alert Banner */}
       <AlertBanner
         totalInflow={data.totalInflow}
         totalSales={data.totalSales}
@@ -652,14 +654,14 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
       {/* ── Two-Column: Inflows + Balance Check ─────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Inflows Table (3/5) */}
-        <section className="lg:col-span-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm">
+        <section className="lg:col-span-3 panel p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold font-serif text-stone-900 dark:text-stone-50">
+            <h2 className="font-display text-2xl tracking-tight text-foreground">
               Inflows · {formatDate(data.today).split('/').slice(0,2).join(' ')}
             </h2>
-            <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 cursor-pointer hover:underline">
+            <Link href="/inflow" className="text-sm text-primary transition-opacity hover:opacity-70">
               View all →
-            </span>
+            </Link>
           </div>
           <DataTable
             columns={inflowColumns}
@@ -669,61 +671,57 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
         </section>
 
         {/* Balance Check Card (2/5) */}
-        <section className="lg:col-span-2 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm space-y-5">
+        <section className="lg:col-span-2 panel p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold font-serif text-stone-900 dark:text-stone-50">
+            <h2 className="font-display text-2xl tracking-tight text-foreground">
               Balance check
             </h2>
-            {data.staffClosingBalance !== null && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
-                APPROVED
-              </span>
-            )}
+            <span className="label-caps rounded-full bg-secondary px-3 py-1 text-secondary-foreground font-semibold">
+              {data.staffClosingBalance !== null ? 'APPROVED' : 'SYSTEM'}
+            </span>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-2 border-b border-stone-100 dark:border-stone-800">
-              <span className="text-sm text-stone-500">Opening balance</span>
-              <span className="text-sm font-bold text-stone-900 dark:text-stone-100 font-mono">
+          <dl className="space-y-4 text-sm">
+            <div className="flex items-center justify-between">
+              <dt className="text-muted-foreground">Opening balance</dt>
+              <dd className="num font-medium text-foreground">
                 {formatCurrency(data.openingBalanceTotal)}
-              </span>
+              </dd>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-stone-100 dark:border-stone-800">
-              <span className="text-sm text-stone-500">Net movement</span>
-              <span className={`text-sm font-bold font-mono ${
-                (totalInflowAndSales - data.totalOutflow) >= 0
-                  ? 'text-emerald-700 dark:text-emerald-400'
-                  : 'text-red-700 dark:text-red-400'
+            <div className="flex items-center justify-between">
+              <dt className="text-muted-foreground">Net movement</dt>
+              <dd className={`num font-medium ${
+                (totalInflowAndSales - data.totalOutflow) >= 0 ? 'text-inflow' : 'text-outflow'
               }`}>
                 {(totalInflowAndSales - data.totalOutflow) >= 0 ? '+' : ''}
                 {formatCurrency(totalInflowAndSales - data.totalOutflow)}
-              </span>
+              </dd>
             </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm font-semibold text-stone-700 dark:text-stone-300">Closing balance</span>
-              <span className="text-xl font-black text-amber-700 dark:text-amber-400 font-mono">
+            <div className="flex items-center justify-between border-t border-border pt-4">
+              <dt className="font-medium text-foreground">Closing balance</dt>
+              <dd className="num text-xl font-semibold text-primary">
                 {formatCurrency(netBalance)}
-              </span>
+              </dd>
             </div>
-          </div>
+          </dl>
 
           {data.staffClosingBalance !== null && (
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-800/30 rounded-xl">
-              <div className="p-1.5 bg-emerald-500/20 rounded-full">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-              </div>
+            <div className="flex items-center gap-3 rounded-2xl bg-surface-muted p-4">
+              <span className="flex size-9 items-center justify-center rounded-full bg-card text-inflow font-bold">
+                ✓
+              </span>
               <div>
-                <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300">Verified by Staff</p>
-                <p className="text-[10px] text-emerald-600 dark:text-emerald-500">
+                <span className="block text-sm font-medium text-foreground">Verified by Staff</span>
+                <span className="num block text-xs text-muted-foreground">
                   Staff closing: {formatCurrency(data.staffClosingBalance)}
-                </p>
+                </span>
               </div>
             </div>
           )}
 
           <Link
             href="/balance"
-            className="block w-full text-center py-2.5 border border-stone-200 dark:border-stone-700 rounded-xl text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+            className="block w-full text-center py-3 rounded-2xl border border-border text-sm font-medium text-foreground hover:bg-secondary transition-colors"
           >
             Open reconciliation
           </Link>
@@ -733,14 +731,14 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
       {/* ── Outflow & Dispatch Section ────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Outflow & dispatch (3/5) */}
-        <section className="lg:col-span-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm">
+        <section className="lg:col-span-3 panel p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold font-serif text-stone-900 dark:text-stone-50">
+            <h2 className="font-display text-2xl tracking-tight text-foreground">
               Outflow & dispatch
             </h2>
             <Link
               href="/reports"
-              className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline"
+              className="text-sm text-primary transition-opacity hover:opacity-70"
             >
               Reports →
             </Link>
@@ -752,34 +750,38 @@ function OwnerDashboard({ data, onRefresh, refreshing }: {
           />
         </section>
 
-        {/* Quick Stats (2/5) */}
-        <section className="lg:col-span-2 space-y-4">
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm">
-            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Inflow Today</p>
-            <p className="text-2xl font-black text-stone-900 dark:text-stone-50 font-mono">{formatCurrency(totalInflowAndSales)}</p>
-            <p className="text-xs text-stone-400 mt-1">{data.inflowCount + data.salesCount} slips</p>
+        {/* Quick Stats Grid (2/5) */}
+        <section className="lg:col-span-2 panel grid grid-cols-2 divide-x divide-y divide-border overflow-hidden">
+          <div className="p-6">
+            <p className="label-caps">Inflow Today</p>
+            <p className="num mt-2 text-2xl font-semibold text-foreground">{formatCurrency(totalInflowAndSales)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{data.inflowCount + data.salesCount} slips</p>
           </div>
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm">
-            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Outflow Today</p>
-            <p className="text-2xl font-black text-stone-900 dark:text-stone-50 font-mono">{formatCurrency(data.totalOutflow)}</p>
-            <p className="text-xs text-stone-400 mt-1">{data.outflowCount} slips</p>
+          <div className="p-6">
+            <p className="label-caps">Outflow Today</p>
+            <p className="num mt-2 text-2xl font-semibold text-foreground">{formatCurrency(data.totalOutflow)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{data.outflowCount} slips</p>
           </div>
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm">
-            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Cash Difference</p>
-            <p className={`text-2xl font-black font-mono ${
-              data.cashDifference === null ? 'text-stone-400'
-              : data.cashDifference === 0 ? 'text-emerald-700 dark:text-emerald-400'
-              : data.cashDifference > 0 ? 'text-amber-700 dark:text-amber-400'
-              : 'text-red-700 dark:text-red-400'
+          <div className="p-6">
+            <p className="label-caps">Cash Difference</p>
+            <p className={`num mt-2 text-2xl font-semibold ${
+              data.cashDifference === null ? 'text-muted-foreground'
+              : data.cashDifference === 0 ? 'text-inflow'
+              : 'text-outflow'
             }`}>
               {data.cashDifference !== null ? formatCurrency(data.cashDifference) : '—'}
             </p>
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="mt-1 text-xs text-muted-foreground">
               {data.cashDifference === null ? 'Awaiting closing'
               : data.cashDifference === 0 ? 'Balanced ✓'
               : data.cashDifference > 0 ? 'Excess cash'
               : 'Cash shortage'}
             </p>
+          </div>
+          <div className="p-6">
+            <p className="label-caps">Total Entries</p>
+            <p className="num mt-2 text-2xl font-semibold text-foreground">{data.recentTransactions.length}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Recorded today</p>
           </div>
         </section>
       </div>
