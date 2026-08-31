@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const NAV = [
   { name: "Dashboard", href: "/dashboard" },
@@ -38,6 +39,7 @@ export function TopBar({ dateLabel }: { dateLabel: string }) {
             <span className="size-1.5 rounded-full bg-chart-1" />
             {dateLabel}
           </span>
+          <ThemeToggle />
           <button className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-pill transition-colors hover:bg-primary/90">
             + New Entry
           </button>

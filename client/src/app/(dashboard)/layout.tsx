@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Menu, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
@@ -96,6 +97,7 @@ export default function DashboardLayout({
             <div className="hidden md:flex items-center justify-center px-3 py-1 bg-emerald-700/20 text-emerald-400 rounded-full text-sm font-medium border border-emerald-700/30">
               {currentDate}
             </div>
+            <ThemeToggle />
             <button className="hidden sm:flex items-center gap-1.5 bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">
               <Plus className="w-4 h-4" />
               New Entry
