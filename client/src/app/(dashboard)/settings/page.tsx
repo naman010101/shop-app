@@ -76,10 +76,10 @@ export default function SettingsPage() {
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+        <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight">
           Account Settings
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-stone-500 dark:text-stone-400">
           Manage your login credentials and profile details.
         </p>
       </div>
@@ -87,36 +87,36 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* ── Profile Card ── */}
         <div className="md:col-span-1">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-            <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <User className="w-4 h-4 text-indigo-500" />
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm space-y-4">
+            <h2 className="text-sm font-bold text-stone-700 dark:text-stone-300 flex items-center gap-2">
+              <User className="w-4 h-4 text-amber-700 dark:text-amber-500" />
               <span>User Profile</span>
             </h2>
 
-            <div className="flex flex-col items-center justify-center text-center p-4 border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl">
-              <div className="h-16 w-16 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center font-bold text-xl uppercase mb-3">
+            <div className="flex flex-col items-center justify-center text-center p-4 border border-stone-100 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50 rounded-2xl">
+              <div className="h-16 w-16 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-xl uppercase mb-3">
                 {user?.username.slice(0, 2)}
               </div>
-              <span className="text-base font-bold text-slate-800 dark:text-slate-200">
+              <span className="text-base font-bold text-stone-800 dark:text-stone-200">
                 @{user?.username}
               </span>
-              <span className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+              <span className="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400">
                 <Shield className="w-3 h-3" />
                 {user?.role}
               </span>
             </div>
 
             <div className="space-y-3 pt-2 text-xs">
-              <div className="flex items-center justify-between text-slate-500">
+              <div className="flex items-center justify-between text-stone-500">
                 <span>Account Status:</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                   <CheckCircle className="w-3.5 h-3.5" />
                   Active
                 </span>
               </div>
-              <div className="flex items-center justify-between text-slate-500">
+              <div className="flex items-center justify-between text-stone-500">
                 <span>Current Session:</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Valid</span>
+                <span className="font-semibold text-stone-700 dark:text-stone-300">Valid</span>
               </div>
             </div>
           </div>
@@ -127,27 +127,27 @@ export default function SettingsPage() {
 
           {/* Change Username — OWNER only */}
           {user?.role === 'OWNER' ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-4">
-              <AtSign className="w-4 h-4 text-indigo-500" />
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-sm font-bold text-stone-700 dark:text-stone-300 flex items-center gap-2 mb-4">
+              <AtSign className="w-4 h-4 text-amber-700 dark:text-amber-500" />
               <span>Change Username</span>
             </h2>
 
             <form onSubmit={handleUsernameSubmit} className="space-y-4">
               {/* Current username (read-only) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">
                   Current Username
                 </label>
-                <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 py-2.5 px-3.5">
-                  <span className="text-slate-400 text-sm">@</span>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{user?.username}</span>
-                  <Lock className="w-3.5 h-3.5 text-slate-400 ml-auto" />
+                <div className="flex items-center gap-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800/40 py-2.5 px-3.5">
+                  <span className="text-stone-400 text-sm">@</span>
+                  <span className="text-sm font-medium text-stone-700 dark:text-stone-300">{user?.username}</span>
+                  <Lock className="w-3.5 h-3.5 text-stone-400 ml-auto" />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">
                   New Username (min. 3 characters)
                 </label>
                 <input
@@ -157,7 +157,7 @@ export default function SettingsPage() {
                   placeholder="e.g. admin_new"
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
                 />
               </div>
 
@@ -166,7 +166,7 @@ export default function SettingsPage() {
                   type="submit"
                   id="btn-save-username"
                   disabled={usernameSubmitting}
-                  className="flex items-center gap-2 py-2.5 px-6 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 transition-colors cursor-pointer"
+                  className="flex items-center gap-2 py-2.5 px-6 rounded-xl text-sm font-semibold text-white bg-amber-700 hover:bg-amber-600 disabled:opacity-50 transition-colors cursor-pointer shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>{usernameSubmitting ? 'Saving…' : 'Save Username'}</span>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
           <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-6">
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-xl bg-amber-500/10">
-                <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <Lock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-amber-800 dark:text-amber-300">Username Cannot Be Changed</h3>
@@ -191,15 +191,15 @@ export default function SettingsPage() {
           )}
 
           {/* Change Password */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-4">
-              <Key className="w-4 h-4 text-indigo-500" />
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-sm font-bold text-stone-700 dark:text-stone-300 flex items-center gap-2 mb-4">
+              <Key className="w-4 h-4 text-amber-700 dark:text-amber-500" />
               <span>Update Password</span>
             </h2>
 
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">
                   Current Password
                 </label>
                 <input
@@ -209,12 +209,12 @@ export default function SettingsPage() {
                   placeholder="••••••••"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">
                   New Password (min. 6 characters)
                 </label>
                 <input
@@ -224,12 +224,12 @@ export default function SettingsPage() {
                   placeholder="••••••••"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">
                   Confirm New Password
                 </label>
                 <input
@@ -239,7 +239,7 @@ export default function SettingsPage() {
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-indigo-500"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
                 />
               </div>
 
@@ -248,7 +248,7 @@ export default function SettingsPage() {
                   id="btn-update-password"
                   type="submit"
                   disabled={pwSubmitting}
-                  className="flex items-center gap-2 py-2.5 px-6 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 transition-colors cursor-pointer"
+                  className="flex items-center gap-2 py-2.5 px-6 rounded-xl text-sm font-semibold text-white bg-amber-700 hover:bg-amber-600 disabled:opacity-50 transition-colors cursor-pointer shadow-sm"
                 >
                   <Key className="w-4 h-4" />
                   <span>{pwSubmitting ? 'Updating…' : 'Update Password'}</span>

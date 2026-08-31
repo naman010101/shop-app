@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'CashFlow - Premium Cash Management System',
+  title: 'Cash Terminal — Shop Ledger',
   description: 'Track inflow, sales, outflows and export reports with ease.',
 };
 
@@ -22,13 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+      <body className="min-h-full flex flex-col bg-[#FAF7F2] text-stone-900 dark:bg-stone-950 dark:text-stone-100 transition-colors duration-200">
         <ThemeProvider>
           <AuthProvider>
             <Toaster 
               position="top-right"
               toastOptions={{
-                className: 'dark:bg-slate-900 dark:text-white border dark:border-slate-800',
+                className: 'dark:bg-stone-900 dark:text-white border dark:border-stone-800',
               }}
             />
             {children}

@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 import { formatCurrency, formatDate, formatTime } from '@/lib/utils';
 import DataTable from '@/components/DataTable';
-import ExportButtons from '@/components/ExportButtons';
 import KPICard from '@/components/KPICard';
 import {
   BarChart3,
@@ -115,7 +114,6 @@ export default function ReportsPage() {
         userParams.startDate = startDate || undefined;
         userParams.endDate = endDate || undefined;
       } else {
-        // Compute range client-side to pass startDate/endDate for user-wise
         const rangeData = response.data.range;
         if (rangeData) {
           userParams.startDate = rangeData.start;
@@ -152,8 +150,6 @@ export default function ReportsPage() {
         responseType: 'blob',
       });
 
-      // Check if the server returned an error disguised as a blob
-      // (e.g. JSON error response received as blob due to responseType)
       if (response.data.type && response.data.type.includes('application/json')) {
         const text = await response.data.text();
         const errorData = JSON.parse(text);
@@ -173,7 +169,6 @@ export default function ReportsPage() {
       toast.success('PDF exported successfully!');
     } catch (err: any) {
       const message = err?.message || 'Failed to export PDF.';
-      // If it's an axios error with a blob response, try to read the error message
       if (err?.response?.data instanceof Blob) {
         try {
           const text = await err.response.data.text();
@@ -181,7 +176,7 @@ export default function ReportsPage() {
           toast.error(errorData.error || message);
           return;
         } catch {
-          // Couldn't parse blob error, use default message
+          // Fall back
         }
       }
       toast.error(message);
@@ -198,7 +193,6 @@ export default function ReportsPage() {
         responseType: 'blob',
       });
 
-      // Check if the server returned an error disguised as a blob
       if (response.data.type && response.data.type.includes('application/json')) {
         const text = await response.data.text();
         const errorData = JSON.parse(text);
@@ -227,7 +221,7 @@ export default function ReportsPage() {
           toast.error(errorData.error || message);
           return;
         } catch {
-          // Couldn't parse blob error, use default message
+          // Fall back
         }
       }
       toast.error(message);
@@ -237,11 +231,11 @@ export default function ReportsPage() {
   if (!isOwner) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full">
+        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 rounded-full">
           <Lock className="w-12 h-12" />
         </div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">Access Denied</h1>
-        <p className="text-sm text-slate-500 max-w-sm">
+        <h1 className="text-xl font-bold font-serif text-stone-900 dark:text-stone-50">Access Denied</h1>
+        <p className="text-sm text-stone-500 max-w-sm">
           Only the Shop Owner (Admin) can view reports and dashboards. Please contact the administrator.
         </p>
       </div>
@@ -262,9 +256,9 @@ export default function ReportsPage() {
       header: 'Type',
       accessor: (row: any) => {
         const styles: any = {
-          inflow: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-          sales: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
-          outflow: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+          inflow: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+          sales: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
+          outflow: 'bg-rose-500/10 text-rose-700 dark:text-rose-400',
         };
         return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold ${styles[row.type]}`}>{row.type.toUpperCase()}</span>;
       }
@@ -282,7 +276,7 @@ export default function ReportsPage() {
       header: 'Amount',
       accessor: (row: any) => {
         const sign = row.type === 'outflow' ? '-' : '+';
-        const style = row.type === 'outflow' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400';
+        const style = row.type === 'outflow' ? 'text-rose-700 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400';
         return <span className={`font-semibold ${style}`}>{sign} {formatCurrency(row.amount)}</span>;
       },
       className: 'text-right font-mono'
@@ -299,7 +293,7 @@ export default function ReportsPage() {
     {
       header: 'Net Cash',
       accessor: (row: UserSummary) => {
-        const style = row.netBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-rose-600 dark:text-rose-400 font-semibold';
+        const style = row.netBalance >= 0 ? 'text-emerald-700 dark:text-emerald-400 font-semibold' : 'text-rose-700 dark:text-rose-400 font-semibold';
         return <span className={style}>{formatCurrency(row.netBalance)}</span>;
       },
       className: 'text-right font-mono'
@@ -317,9 +311,9 @@ export default function ReportsPage() {
       header: 'Status',
       accessor: (row: any) => {
         const styles: any = {
-          APPROVED: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-          FLAGGED: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
-          UNVERIFIED: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+          APPROVED: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+          FLAGGED: 'bg-rose-500/10 text-rose-700 dark:text-rose-400',
+          UNVERIFIED: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
         };
         return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold ${styles[row.status] || ''}`}>{row.status}</span>;
       }
@@ -331,29 +325,29 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-indigo-500" />
+          <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-amber-700 dark:text-amber-500" />
             <span>Reports &amp; Audit Desk</span>
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400">
             Generate ledger summaries, evaluate staff registers, and export transaction audit trails.
           </p>
         </div>
       </div>
 
       {/* Filters Area */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Preset Buttons */}
-          <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+          <div className="flex rounded-xl bg-stone-100 dark:bg-stone-800 p-1">
             {(['daily', 'weekly', 'monthly', 'custom'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setReportType(t)}
                 className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${
                   reportType === t
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                    ? 'bg-stone-950 text-white shadow-sm dark:bg-amber-700'
+                    : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
                 }`}
               >
                 {t}
@@ -383,12 +377,12 @@ export default function ReportsPage() {
 
         {/* Date Range Label */}
         {reportRange && !loading && (
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
             <Calendar className="w-3.5 h-3.5" />
             <span>
-              Showing data for: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(reportRange.start)}</span>
+              Showing data for: <span className="font-semibold text-stone-700 dark:text-stone-300">{formatDate(reportRange.start)}</span>
               {reportRange.start !== reportRange.end && (
-                <> — <span className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(reportRange.end)}</span></>
+                <> — <span className="font-semibold text-stone-700 dark:text-stone-300">{formatDate(reportRange.end)}</span></>
               )}
             </span>
           </div>
@@ -398,12 +392,12 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
           {reportType !== 'custom' && (
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Reference Date</span>
+              <span className="text-[10px] font-bold text-stone-400 uppercase">Reference Date</span>
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
               />
             </div>
           )}
@@ -411,32 +405,32 @@ export default function ReportsPage() {
           {reportType === 'custom' && (
             <>
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Start Date</span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase">Start Date</span>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
                 />
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">End Date</span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase">End Date</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
                 />
               </div>
             </>
           )}
 
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">Filter Staff User</span>
+            <span className="text-[10px] font-bold text-stone-400 uppercase">Filter Staff User</span>
             <select
               value={filterUser}
               onChange={(e) => setFilterUser(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+              className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
             >
               <option value="">All Staff</option>
               {usersList.map((u) => (
@@ -451,7 +445,7 @@ export default function ReportsPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-28 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+            <div key={i} className="h-28 bg-stone-200 dark:bg-stone-800 rounded-2xl"></div>
           ))}
         </div>
       ) : (
@@ -468,7 +462,7 @@ export default function ReportsPage() {
               title="Total Sales Value"
               value={formatCurrency(summary.totalSales)}
               icon={<TrendingUp className="w-6 h-6" />}
-              color="indigo"
+              color="amber"
             />
             <KPICard
               title="Total Cash Outflow"
@@ -480,7 +474,7 @@ export default function ReportsPage() {
               title="Net Cash Movement"
               value={formatCurrency(summary.netCashMovement)}
               icon={<Wallet className="w-6 h-6" />}
-              color={summary.netCashMovement >= 0 ? 'amber' : 'rose'}
+              color={summary.netCashMovement >= 0 ? 'emerald' : 'rose'}
               description="Opening + Inflow + Sales − Outflow"
             />
           </div>
@@ -491,7 +485,7 @@ export default function ReportsPage() {
               title="Opening Balance (Period)"
               value={formatCurrency(summary.openingBalance)}
               icon={<Coins className="w-6 h-6" />}
-              color="indigo"
+              color="amber"
               description="Sum of all opening balances in range"
             />
             <KPICard
@@ -507,7 +501,7 @@ export default function ReportsPage() {
 
       {/* Detail Tables Tabs */}
       <div className="space-y-4">
-        <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
+        <div className="flex border-b border-stone-200 dark:border-stone-800 overflow-x-auto gap-2">
           {[
             { id: 'summary',  name: 'All Transactions' },
             { id: 'inflow',   name: 'Inflow Records' },
@@ -521,8 +515,8 @@ export default function ReportsPage() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2.5 border-b-2 font-semibold text-sm whitespace-nowrap transition-colors cursor-pointer ${
                 activeTab === tab.id
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                  ? 'border-amber-700 text-amber-700 dark:text-amber-400 dark:border-amber-500'
+                  : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
               }`}
             >
               {tab.name}
@@ -550,7 +544,7 @@ export default function ReportsPage() {
               { header: 'Recorded By', accessor: (row) => row.user?.username || 'N/A' },
               {
                 header: 'Amount',
-                accessor: (row) => <span className="font-semibold text-emerald-600">{formatCurrency(row.amount)}</span>,
+                accessor: (row) => <span className="font-semibold text-emerald-700 dark:text-emerald-400 font-mono">{formatCurrency(row.amount)}</span>,
                 className: 'text-right font-mono'
               }
             ]}
@@ -570,7 +564,7 @@ export default function ReportsPage() {
               { header: 'Recorded By', accessor: (row) => row.user?.username || 'N/A' },
               {
                 header: 'Amount',
-                accessor: (row) => <span className="font-semibold text-indigo-600">{formatCurrency(row.amount)}</span>,
+                accessor: (row) => <span className="font-semibold text-amber-700 dark:text-amber-400 font-mono">{formatCurrency(row.amount)}</span>,
                 className: 'text-right font-mono'
               }
             ]}
@@ -589,7 +583,7 @@ export default function ReportsPage() {
               { header: 'Recorded By', accessor: (row) => row.user?.username || 'N/A' },
               {
                 header: 'Amount',
-                accessor: (row) => <span className="font-semibold text-rose-600">{formatCurrency(row.amount)}</span>,
+                accessor: (row) => <span className="font-semibold text-rose-700 dark:text-rose-400 font-mono">{formatCurrency(row.amount)}</span>,
                 className: 'text-right font-mono'
               }
             ]}

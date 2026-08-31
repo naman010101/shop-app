@@ -225,14 +225,14 @@ export default function InflowPage() {
   const columns = [
     { header: 'Date', accessor: (row: InflowRecord) => formatDate(row.date) },
     { header: 'Time', accessor: (row: InflowRecord) => formatTime(row.time) },
-    { header: 'Slip Number', accessor: 'slipNumber' },
+    { header: 'Slip Number', accessor: 'slipNumber', className: 'font-mono' },
     { header: 'Customer/Product', accessor: 'customerName' },
     { header: 'Remarks', accessor: (row: InflowRecord) => row.remarks || '-' },
     { header: 'Recorded By', accessor: (row: InflowRecord) => row.user?.username || 'N/A' },
     {
       header: 'Amount',
       accessor: (row: InflowRecord) => (
-        <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+        <span className="font-semibold text-emerald-700 dark:text-emerald-400">
           {formatCurrency(row.amount)}
         </span>
       ),
@@ -246,19 +246,21 @@ export default function InflowPage() {
             <>
               <button
                 onClick={() => handleEditClick(row)}
-                className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white dark:bg-indigo-500/20 dark:text-indigo-400 dark:hover:bg-indigo-500 transition-colors cursor-pointer"
+                className="p-1 rounded-lg bg-amber-500/10 text-amber-700 hover:bg-amber-700 hover:text-white dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-600 transition-colors cursor-pointer"
+                title="Edit entry"
               >
                 <Edit2 className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setDeleteRecord(row)}
-                className="p-1 rounded bg-rose-500/10 text-rose-600 hover:bg-rose-50 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 transition-colors cursor-pointer"
+                className="p-1 rounded-lg bg-rose-500/10 text-rose-700 hover:bg-rose-700 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-600 transition-colors cursor-pointer"
+                title="Delete entry"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </>
           ) : (
-            <span className="text-xs text-slate-400 cursor-not-allowed italic" title="Staff accounts cannot edit entries.">
+            <span className="text-xs text-stone-400 cursor-not-allowed italic" title="Staff accounts cannot edit entries.">
               Submitted
             </span>
           )}
@@ -273,10 +275,10 @@ export default function InflowPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+          <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight">
             Cash Inflow Ledger
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
             Log deposit slips, customer payments, and track in-hand cash receipts.
           </p>
         </div>
@@ -294,15 +296,15 @@ export default function InflowPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Transaction Entry Form */}
         <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm sticky top-20">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-4 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-indigo-500" />
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 shadow-sm sticky top-20">
+            <h2 className="text-lg font-bold font-serif text-stone-900 dark:text-stone-50 mb-4 flex items-center gap-2">
+              <Plus className="w-5 h-5 text-amber-700 dark:text-amber-500" />
               <span>Record Cash Inflow</span>
             </h2>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                   Slip Number (Unique)
                 </label>
                 <div className="relative">
@@ -312,24 +314,24 @@ export default function InflowPage() {
                     placeholder="e.g. SLIP-10023"
                     value={slipNumber}
                     onChange={(e) => setSlipNumber(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100 font-mono"
                   />
                   {checkingSlip && (
                     <span className="absolute right-3.5 top-3">
-                      <RefreshCw className="w-4.5 h-4.5 animate-spin text-slate-400" />
+                      <RefreshCw className="w-4.5 h-4.5 animate-spin text-stone-400" />
                     </span>
                   )}
                 </div>
                 {slipExists && (
-                  <p className="text-xs text-rose-500 flex items-center gap-1 mt-1">
-                    <AlertCircle className="w-3.5 h-3.5" />
+                  <p className="text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1 mt-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                     <span>This slip number is already taken.</span>
                   </p>
                 )}
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                   Amount (INR)
                 </label>
                 <input
@@ -340,12 +342,12 @@ export default function InflowPage() {
                   placeholder="₹0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                   Customer/Product Name
                 </label>
                 <input
@@ -354,12 +356,12 @@ export default function InflowPage() {
                   placeholder="e.g. Ramesh Kumar / Product Sale"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                   Remarks (Optional)
                 </label>
                 <textarea
@@ -367,14 +369,14 @@ export default function InflowPage() {
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
                   rows={3}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2.5 px-3.5 text-sm outline-hidden transition-all focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submitting || slipExists || checkingSlip}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-amber-700 hover:bg-amber-600 active:bg-amber-800 disabled:opacity-50 transition-colors cursor-pointer shadow-sm"
               >
                 <span>Submit Entry</span>
               </button>
@@ -385,14 +387,14 @@ export default function InflowPage() {
         {/* Filters and Ledgers list */}
         <div className="lg:col-span-2 space-y-4">
           {/* Filters Bar */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+              <h3 className="text-sm font-bold text-stone-700 dark:text-stone-300">
                 Filters & Search
               </h3>
               <button
                 onClick={clearFilters}
-                className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-amber-700 hover:text-amber-600 dark:text-amber-400 transition-colors cursor-pointer"
               >
                 Clear All
               </button>
@@ -401,9 +403,9 @@ export default function InflowPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {/* Slip Filter */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Slip Number</span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase">Slip Number</span>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-stone-400">
                     <Search className="w-3.5 h-3.5" />
                   </span>
                   <input
@@ -411,16 +413,16 @@ export default function InflowPage() {
                     placeholder="Search slip..."
                     value={filterSlip}
                     onChange={(e) => { setFilterSlip(e.target.value); setPage(1); }}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-indigo-500"
+                    className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-amber-600 text-stone-900 dark:text-stone-100"
                   />
                 </div>
               </div>
 
               {/* Customer Filter */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Customer</span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase">Customer</span>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-stone-400">
                     <Search className="w-3.5 h-3.5" />
                   </span>
                   <input
@@ -428,7 +430,7 @@ export default function InflowPage() {
                     placeholder="Search customer..."
                     value={filterCustomer}
                     onChange={(e) => { setFilterCustomer(e.target.value); setPage(1); }}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-indigo-500"
+                    className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 pl-8 pr-3 text-xs outline-hidden focus:border-amber-600 text-stone-900 dark:text-stone-100"
                   />
                 </div>
               </div>
@@ -436,11 +438,11 @@ export default function InflowPage() {
               {/* Staff filter (Owner only) */}
               {isOwner && (
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Staff User</span>
+                  <span className="text-[10px] font-bold text-stone-400 uppercase">Staff User</span>
                   <select
                     value={filterUser}
                     onChange={(e) => { setFilterUser(e.target.value); setPage(1); }}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                    className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
                   >
                     <option value="">All Staff</option>
                     {usersList.map((u) => (
@@ -452,22 +454,22 @@ export default function InflowPage() {
 
               {/* Date Filters */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Start Date</span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase">Start Date</span>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                  className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
                 />
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">End Date</span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase">End Date</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-indigo-500 dark:bg-slate-900"
+                  className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-transparent py-1.5 px-3 text-xs outline-hidden focus:border-amber-600 dark:bg-stone-900 text-stone-900 dark:text-stone-100"
                 />
               </div>
             </div>
@@ -495,11 +497,11 @@ export default function InflowPage() {
         {editRecord && (
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="space-y-1">
-              <span className="text-xs text-slate-400">Recorded by: {editRecord.user?.username} ({formatDate(editRecord.date)})</span>
+              <span className="text-xs text-stone-400">Recorded by: {editRecord.user?.username} ({formatDate(editRecord.date)})</span>
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Slip Number
               </label>
               <input
@@ -507,12 +509,12 @@ export default function InflowPage() {
                 required
                 value={editSlipNumber}
                 onChange={(e) => setEditSlipNumber(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100 font-mono"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Amount (INR)
               </label>
               <input
@@ -522,12 +524,12 @@ export default function InflowPage() {
                 required
                 value={editAmount}
                 onChange={(e) => setEditAmount(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 font-mono"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 font-mono text-stone-900 dark:text-stone-100"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Customer/Product Name
               </label>
               <input
@@ -535,19 +537,19 @@ export default function InflowPage() {
                 required
                 value={editCustomerName}
                 onChange={(e) => setEditCustomerName(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <label className="text-xs font-semibold text-stone-500 dark:text-stone-400">
                 Remarks
               </label>
               <textarea
                 value={editRemarks}
                 onChange={(e) => setEditRemarks(e.target.value)}
                 rows={3}
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-600 focus:ring-1 focus:ring-amber-600 text-stone-900 dark:text-stone-100"
               />
             </div>
 
@@ -555,14 +557,14 @@ export default function InflowPage() {
               <button
                 type="button"
                 onClick={() => setEditRecord(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={editSubmitting}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                className="px-4 py-2 bg-amber-700 hover:bg-amber-600 active:bg-amber-800 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer shadow-sm"
               >
                 Save Changes
               </button>
@@ -579,35 +581,35 @@ export default function InflowPage() {
       >
         {deleteRecord && (
           <div className="space-y-4">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
               Are you sure you want to permanently delete this cash inflow record?
             </p>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+            <div className="p-4 bg-stone-50 dark:bg-stone-800/40 rounded-xl border border-stone-200 dark:border-stone-800 text-xs space-y-2">
               <div>
-                <span className="font-semibold text-slate-500">Slip Number:</span>{' '}
-                <span className="text-slate-800 dark:text-slate-200 font-mono">{deleteRecord.slipNumber}</span>
+                <span className="font-semibold text-stone-500">Slip Number:</span>{' '}
+                <span className="text-stone-800 dark:text-stone-200 font-mono">{deleteRecord.slipNumber}</span>
               </div>
               <div>
-                <span className="font-semibold text-slate-500">Customer:</span>{' '}
-                <span className="text-slate-800 dark:text-slate-200">{deleteRecord.customerName}</span>
+                <span className="font-semibold text-stone-500">Customer:</span>{' '}
+                <span className="text-stone-800 dark:text-stone-200">{deleteRecord.customerName}</span>
               </div>
               <div>
-                <span className="font-semibold text-slate-500">Amount:</span>{' '}
-                <span className="font-semibold text-rose-600 dark:text-rose-400">{formatCurrency(deleteRecord.amount)}</span>
+                <span className="font-semibold text-stone-500">Amount:</span>{' '}
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400 font-mono">{formatCurrency(deleteRecord.amount)}</span>
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setDeleteRecord(null)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleteSubmitting}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-600 active:bg-rose-800 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer shadow-sm"
               >
                 Delete Record
               </button>

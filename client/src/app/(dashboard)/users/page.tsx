@@ -83,11 +83,11 @@ export default function UsersPage() {
   if (!isOwner) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full">
+        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 rounded-full">
           <Lock className="w-12 h-12" />
         </div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50">Access Denied</h1>
-        <p className="text-sm text-slate-500 max-w-sm">
+        <h1 className="text-xl font-bold font-serif text-stone-900 dark:text-stone-50">Access Denied</h1>
+        <p className="text-sm text-stone-500 max-w-sm">
           Only the Shop Owner (Admin) can manage user accounts. Please contact the administrator.
         </p>
       </div>
@@ -202,16 +202,16 @@ export default function UsersPage() {
       header: 'Role',
       accessor: (row: UserRecord) => {
         const style = row.role === 'OWNER'
-          ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
-          : 'bg-slate-500/10 text-slate-600 dark:text-slate-400';
+          ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
+          : 'bg-stone-500/10 text-stone-700 dark:text-stone-400';
         return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold ${style}`}>{row.role}</span>;
       }
     },
     {
       header: 'Status',
       accessor: (row: UserRecord) => (
-        <span className={`inline-flex items-center gap-1 text-xs font-bold ${row.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${row.isActive ? 'bg-emerald-600' : 'bg-rose-600'}`}></span>
+        <span className={`inline-flex items-center gap-1 text-xs font-bold ${row.isActive ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${row.isActive ? 'bg-emerald-700' : 'bg-rose-700'}`}></span>
           {row.isActive ? 'Active' : 'Deactivated'}
         </span>
       )
@@ -223,16 +223,16 @@ export default function UsersPage() {
         const isSelf = row.id === currentUser?.id;
         return (
           <div className="flex justify-end gap-2">
-            <button onClick={() => handleEditClick(row)} className="p-1 rounded bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500 hover:text-white transition-colors cursor-pointer" title="Edit Profile">
+            <button onClick={() => handleEditClick(row)} className="p-1.5 rounded-lg bg-amber-500/10 text-amber-700 hover:bg-amber-700 hover:text-white dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-600 transition-colors cursor-pointer" title="Edit Profile">
               <Edit2 className="w-3.5 h-3.5" />
             </button>
-            <button onClick={() => setResetUser(row)} className="p-1 rounded bg-amber-500/10 text-amber-600 hover:bg-amber-500 hover:text-white transition-colors cursor-pointer" title="Reset Password">
+            <button onClick={() => setResetUser(row)} className="p-1.5 rounded-lg bg-stone-500/10 text-stone-700 hover:bg-stone-700 hover:text-white dark:bg-stone-500/20 dark:text-stone-300 dark:hover:bg-stone-600 transition-colors cursor-pointer" title="Reset Password">
               <Key className="w-3.5 h-3.5" />
             </button>
             {!isSelf && (
               <button
                 onClick={() => handleStatusToggle(row)}
-                className={`p-1 rounded transition-colors cursor-pointer ${row.isActive ? 'bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white' : 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500 hover:text-white'}`}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${row.isActive ? 'bg-rose-500/10 text-rose-700 hover:bg-rose-700 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-600' : 'bg-emerald-500/10 text-emerald-700 hover:bg-emerald-700 hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-600'}`}
                 title={row.isActive ? 'Deactivate Account' : 'Activate Account'}
               >
                 <Power className="w-3.5 h-3.5" />
@@ -250,16 +250,16 @@ export default function UsersPage() {
       {/* ── Page Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-bold font-serif text-stone-900 dark:text-stone-50 tracking-tight flex items-center gap-2">
             Staff Account Desk
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400">
             Create, edit roles, deactivate staff, and reset account passwords.
           </p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl text-sm transition-all cursor-pointer shadow-lg shadow-indigo-600/30"
+          className="flex items-center gap-2 px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white font-medium rounded-xl text-sm transition-all cursor-pointer shadow-sm"
         >
           <UserPlus className="w-4 h-4" />
           <span>Add User Account</span>
@@ -267,7 +267,7 @@ export default function UsersPage() {
       </div>
 
       {/* ── My Account Quick-Edit Card ── */}
-      <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-700 dark:to-indigo-800 rounded-2xl p-5 shadow-lg shadow-indigo-600/25">
+      <div className="bg-gradient-to-br from-amber-800 to-amber-900 dark:from-stone-900 dark:to-stone-800 border border-amber-700/40 dark:border-stone-700 rounded-2xl p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Left: identity */}
           <div className="flex items-center gap-4">
@@ -275,9 +275,9 @@ export default function UsersPage() {
               {currentUser?.username.slice(0, 2)}
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">My Account</span>
+              <span className="text-xs font-semibold text-amber-200 uppercase tracking-wider">My Account</span>
               <span className="text-base font-bold text-white">@{currentUser?.username}</span>
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-200 mt-0.5">
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-200 mt-0.5">
                 <Shield className="w-3 h-3" />
                 {currentUser?.role}
               </span>
@@ -311,8 +311,8 @@ export default function UsersPage() {
       {/* ── Staff Accounts Table ── */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <UserCog className="w-4 h-4 text-slate-500" />
-          <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">All Staff Accounts</span>
+          <UserCog className="w-4 h-4 text-stone-500" />
+          <span className="text-sm font-semibold text-stone-700 dark:text-stone-300">All Staff Accounts</span>
         </div>
         <DataTable columns={columns} data={users} isLoading={loading} emptyMessage="No users found." />
       </div>
@@ -322,21 +322,21 @@ export default function UsersPage() {
       ════════════════════════════════════════════════════════════════════════ */}
       <Modal isOpen={myUsernameOpen} onClose={() => setMyUsernameOpen(false)} title="Change My Username">
         <form onSubmit={handleMyUsername} className="space-y-4">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-stone-500 dark:text-stone-400">
             Enter a new unique username for your admin account. You will need to use the new username to log in next time.
           </p>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Current Username</label>
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 py-2.5 px-3.5">
-              <span className="text-slate-400 text-sm">@</span>
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{currentUser?.username}</span>
-              <Lock className="w-3.5 h-3.5 text-slate-400 ml-auto" />
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Current Username</label>
+            <div className="flex items-center gap-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800/40 py-2.5 px-3.5">
+              <span className="text-stone-400 text-sm">@</span>
+              <span className="text-sm font-medium text-stone-700 dark:text-stone-300">{currentUser?.username}</span>
+              <Lock className="w-3.5 h-3.5 text-stone-400 ml-auto" />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">New Username (min. 3 characters)</label>
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">New Username (min. 3 characters)</label>
             <input
               id="modal-my-new-username"
               type="text"
@@ -344,15 +344,15 @@ export default function UsersPage() {
               placeholder="e.g. shop_admin"
               value={myNewUsername}
               onChange={(e) => setMyNewUsername(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500"
+              className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500"
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setMyUsernameOpen(false)} className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+            <button type="button" onClick={() => setMyUsernameOpen(false)} className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
               Cancel
             </button>
-            <button type="submit" disabled={myUsernameSubmitting} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+            <button type="submit" disabled={myUsernameSubmitting} className="flex items-center gap-2 px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
               <Save className="w-4 h-4" />
               {myUsernameSubmitting ? 'Saving…' : 'Save Username'}
             </button>
@@ -365,28 +365,28 @@ export default function UsersPage() {
       ════════════════════════════════════════════════════════════════════════ */}
       <Modal isOpen={myPasswordOpen} onClose={() => setMyPasswordOpen(false)} title="Change My Password">
         <form onSubmit={handleMyPassword} className="space-y-4">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-stone-500 dark:text-stone-400">
             You must enter your current password to set a new one.
           </p>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Current Password</label>
-            <input id="modal-my-current-pw" type="password" required placeholder="••••••••" value={myCurrentPw} onChange={(e) => setMyCurrentPw(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Current Password</label>
+            <input id="modal-my-current-pw" type="password" required placeholder="••••••••" value={myCurrentPw} onChange={(e) => setMyCurrentPw(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">New Password (min. 6 characters)</label>
-            <input id="modal-my-new-pw" type="password" required placeholder="••••••••" value={myNewPw} onChange={(e) => setMyNewPw(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">New Password (min. 6 characters)</label>
+            <input id="modal-my-new-pw" type="password" required placeholder="••••••••" value={myNewPw} onChange={(e) => setMyNewPw(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Confirm New Password</label>
-            <input id="modal-my-confirm-pw" type="password" required placeholder="••••••••" value={myConfirmPw} onChange={(e) => setMyConfirmPw(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Confirm New Password</label>
+            <input id="modal-my-confirm-pw" type="password" required placeholder="••••••••" value={myConfirmPw} onChange={(e) => setMyConfirmPw(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setMyPasswordOpen(false)} className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+            <button type="button" onClick={() => setMyPasswordOpen(false)} className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">
               Cancel
             </button>
-            <button type="submit" disabled={myPwSubmitting} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
+            <button type="submit" disabled={myPwSubmitting} className="flex items-center gap-2 px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:opacity-60">
               <Key className="w-4 h-4" />
               {myPwSubmitting ? 'Updating…' : 'Update Password'}
             </button>
@@ -400,24 +400,24 @@ export default function UsersPage() {
       <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Add New User Account">
         <form onSubmit={handleCreate} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Username / User ID</label>
-            <input type="text" required placeholder="e.g. cashier_ramesh" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Username / User ID</label>
+            <input type="text" required placeholder="e.g. cashier_ramesh" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Account Role</label>
-            <select value={role} onChange={(e) => setRole(e.target.value as any)} className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 dark:bg-slate-900">
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Account Role</label>
+            <select value={role} onChange={(e) => setRole(e.target.value as any)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500">
               <option value="CASHIER">Cashier User</option>
               <option value="WAREHOUSE_MGMT">Warehouse Management User</option>
               <option value="OWNER">Owner (Admin)</option>
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Password</label>
-            <input type="password" required placeholder="Min. 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+            <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Password</label>
+            <input type="password" required placeholder="Min. 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setCreateOpen(false)} className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">Cancel</button>
-            <button type="submit" disabled={createSubmitting} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer">Add User</button>
+            <button type="button" onClick={() => setCreateOpen(false)} className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" disabled={createSubmitting} className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer">Add User</button>
           </div>
         </form>
       </Modal>
@@ -429,27 +429,27 @@ export default function UsersPage() {
         {editUser && (
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Username / User ID</label>
-              <input type="text" required value={editUsername} onChange={(e) => setEditUsername(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+              <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Username / User ID</label>
+              <input type="text" required value={editUsername} onChange={(e) => setEditUsername(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Account Role</label>
-              <select value={editRole} disabled={editUser.id === currentUser?.id} onChange={(e) => setEditRole(e.target.value as any)} className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500 dark:bg-slate-900">
+              <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">Account Role</label>
+              <select value={editRole} disabled={editUser.id === currentUser?.id} onChange={(e) => setEditRole(e.target.value as any)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500">
                 <option value="CASHIER">Cashier User</option>
                 <option value="WAREHOUSE_MGMT">Warehouse Management User</option>
                 <option value="OWNER">Owner (Admin)</option>
               </select>
             </div>
-            <div className="space-y-1.5 flex items-center justify-between p-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-800/10">
+            <div className="space-y-1.5 flex items-center justify-between p-3 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50/50 dark:bg-stone-800/10">
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Account Status</span>
-                <span className="text-[10px] text-slate-400">Inactive accounts cannot sign in</span>
+                <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">Account Status</span>
+                <span className="text-[10px] text-stone-400">Inactive accounts cannot sign in</span>
               </div>
-              <input type="checkbox" checked={editIsActive} disabled={editUser.id === currentUser?.id} onChange={(e) => setEditIsActive(e.target.checked)} className="h-4 w-4 rounded-sm text-indigo-600 focus:ring-indigo-500 cursor-pointer" />
+              <input type="checkbox" checked={editIsActive} disabled={editUser.id === currentUser?.id} onChange={(e) => setEditIsActive(e.target.checked)} className="h-4 w-4 rounded-sm text-amber-700 focus:ring-amber-700 cursor-pointer accent-amber-700" />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setEditUser(null)} className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">Cancel</button>
-              <button type="submit" disabled={editSubmitting} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer">Save Profile</button>
+              <button type="button" onClick={() => setEditUser(null)} className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">Cancel</button>
+              <button type="submit" disabled={editSubmitting} className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer">Save Profile</button>
             </div>
           </form>
         )}
@@ -461,16 +461,16 @@ export default function UsersPage() {
       <Modal isOpen={!!resetUser} onClose={() => setResetUser(null)} title="Reset Account Password">
         {resetUser && (
           <form onSubmit={handleResetPassword} className="space-y-4">
-            <p className="text-xs text-slate-500">
-              Specify a new login password for user <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono">@{resetUser.username}</span>.
+            <p className="text-xs text-stone-500">
+              Specify a new login password for user <span className="font-semibold text-stone-800 dark:text-stone-200 font-mono">@{resetUser.username}</span>.
             </p>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">New Password</label>
-              <input type="password" required placeholder="Min. 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-indigo-500" />
+              <label className="text-xs font-semibold text-stone-600 dark:text-stone-400">New Password</label>
+              <input type="password" required placeholder="Min. 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full rounded-xl border border-stone-200 dark:border-stone-800 bg-transparent py-2 px-3 text-sm outline-hidden focus:border-amber-700 focus:ring-1 focus:ring-amber-700 dark:bg-stone-900 dark:focus:border-amber-500" />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setResetUser(null)} className="px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">Cancel</button>
-              <button type="submit" disabled={resetSubmitting} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer">Reset Password</button>
+              <button type="button" onClick={() => setResetUser(null)} className="px-4 py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-sm font-medium transition-colors cursor-pointer">Cancel</button>
+              <button type="submit" disabled={resetSubmitting} className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer">Reset Password</button>
             </div>
           </form>
         )}

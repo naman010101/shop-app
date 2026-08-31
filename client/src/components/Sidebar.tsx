@@ -14,12 +14,10 @@ import {
   Settings,
   LogOut,
   X,
-  Menu,
   Wallet,
   Package,
   ArrowLeftRight
 } from 'lucide-react';
-import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 
 interface SidebarProps {
@@ -49,16 +47,18 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   );
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-slate-900 text-slate-100 border-r border-slate-800">
+    <div className="flex flex-col h-full bg-stone-950 text-stone-100 border-r border-stone-800">
       {/* Brand Logo */}
-      <div className="flex items-center justify-between h-16 px-6 border-b border-slate-800">
-        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl tracking-wider text-indigo-400">
-          <TrendingUp className="w-6 h-6 text-indigo-400" />
-          <span>CASHFLOW</span>
+      <div className="flex items-center justify-between h-16 px-6 border-b border-stone-800">
+        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl tracking-wider text-amber-500 font-serif" onClick={() => setMobileOpen(false)}>
+          <div className="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center text-white font-bold text-lg font-sans">
+            ₹
+          </div>
+          <span className="capitalize normal-case tracking-normal">Cash Terminal</span>
         </Link>
         <button
           onClick={() => setMobileOpen(false)}
-          className="lg:hidden p-1 rounded-md text-slate-400 hover:text-slate-200"
+          className="lg:hidden p-1 rounded-md text-stone-400 hover:text-stone-200 cursor-pointer"
         >
           <X className="w-6 h-6" />
         </button>
@@ -76,14 +76,14 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
               className={cn(
                 'flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group',
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+                  ? 'bg-amber-700 text-white shadow-lg shadow-amber-700/30'
+                  : 'text-stone-400 hover:bg-stone-800/60 hover:text-stone-200'
               )}
             >
               <item.icon
                 className={cn(
                   'w-5 h-5 transition-transform duration-200 group-hover:scale-110',
-                  isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
+                  isActive ? 'text-white' : 'text-stone-400 group-hover:text-stone-200'
                 )}
               />
               <span>{item.name}</span>
@@ -93,16 +93,16 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
       </nav>
 
       {/* Footer Info / Logout */}
-      <div className="p-4 border-t border-slate-800 space-y-4">
+      <div className="p-4 border-t border-stone-800 space-y-4">
         <div className="flex items-center justify-between px-2">
           <div className="flex flex-col truncate">
-            <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
+            <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">
               Logged in as
             </span>
-            <span className="text-sm font-medium text-slate-200 truncate">
+            <span className="text-sm font-medium text-stone-200 truncate">
               {user?.username}
             </span>
-            <span className="text-[10px] font-bold text-indigo-400 mt-0.5">
+            <span className="text-[10px] font-bold text-amber-500 mt-0.5">
               {user?.role}
             </span>
           </div>
@@ -121,15 +121,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
 
   return (
     <>
-      {/* Desktop Sidebar (Permanent) */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:z-40">
-        {sidebarContent}
-      </aside>
-
       {/* Mobile Drawer Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
