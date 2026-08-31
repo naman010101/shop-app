@@ -1,22 +1,129 @@
 @import 'tailwindcss';
 @variant dark (.dark &);
 
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-inflow: var(--inflow);
+  --color-outflow: var(--outflow);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --shadow-panel: 0 1px 2px oklch(0.42 0.09 62 / 0.06), 0 12px 32px -12px oklch(0.42 0.09 62 / 0.18);
+  --shadow-pill: 0 1px 2px oklch(0.42 0.09 62 / 0.08);
+  --background-image-page: linear-gradient(
+    180deg,
+    oklch(0.93 0.055 82) 0%,
+    oklch(0.96 0.03 88) 34%,
+    oklch(0.985 0.012 92) 100%
+  );
+}
+
 :root {
-  --background: #FAF7F2;
-  --foreground: #1C1917;
+  --radius: 0.75rem;
+  --background: oklch(0.975 0.02 90);
+  --foreground: oklch(0.24 0.045 62);
+  --card: oklch(0.995 0.006 95);
+  --card-foreground: oklch(0.24 0.045 62);
+  --popover: oklch(0.995 0.006 95);
+  --popover-foreground: oklch(0.24 0.045 62);
+  --primary: oklch(0.47 0.12 55);
+  --primary-foreground: oklch(0.98 0.015 92);
+  --secondary: oklch(0.94 0.03 88);
+  --secondary-foreground: oklch(0.32 0.06 60);
+  --muted: oklch(0.95 0.022 88);
+  --muted-foreground: oklch(0.56 0.045 68);
+  --accent: oklch(0.9 0.05 82);
+  --accent-foreground: oklch(0.3 0.06 60);
+  --destructive: oklch(0.52 0.18 32);
+  --destructive-foreground: oklch(0.98 0.012 92);
+  --border: oklch(0.9 0.03 84);
+  --input: oklch(0.9 0.03 84);
+  --ring: oklch(0.6 0.12 62);
+  --inflow: oklch(0.5 0.11 150);
+  --outflow: oklch(0.52 0.18 32);
+  --surface: oklch(0.995 0.006 95);
+  --surface-muted: oklch(0.955 0.025 88);
+  --chart-1: oklch(0.55 0.15 58);
+  --chart-2: oklch(0.78 0.06 80);
+  --chart-3: oklch(0.68 0.1 70);
+  --chart-4: oklch(0.5 0.11 150);
+  --chart-5: oklch(0.52 0.18 32);
 }
 
 .dark {
-  --background: #1C1917;
-  --foreground: #F5F5F4;
+  --background: oklch(0.2 0.03 60);
+  --foreground: oklch(0.95 0.01 90);
+  --card: oklch(0.24 0.03 60);
+  --card-foreground: oklch(0.95 0.01 90);
+  --border: oklch(0.32 0.03 60);
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-sans), sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    background-image: var(--background-image-page);
+    background-attachment: fixed;
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@utility panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-panel);
+}
+
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+@utility label-caps {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
 }
 
 .glass {
