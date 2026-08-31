@@ -16,6 +16,6 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CLIENT_URL
-        value: https://shop-app-snowy.vercel.app   # Replace with your Vercel URL after deploy
+        value: https://shop-app-navy-two.vercel.app
       - key: PORT
         value: 4000
