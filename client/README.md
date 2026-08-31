@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cash Terminal — Frontend (Next.js Client)
 
-## Getting Started
+This is the **Next.js 16** frontend for the Cash Terminal shop ledger application.
 
-First, run the development server:
+## Stack
+- **Next.js 16** with App Router
+- **React 19** + **TypeScript**
+- **Tailwind CSS 4**
+- **Axios** for API calls
+- **Lucide React** for icons
+- **jsPDF** & **XLSX** for report exports
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs on [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> The dev server proxies all `/api/*` calls to `http://localhost:4000` (backend) via `next.config.ts`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+Create a `.env.local` file:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+NEXT_PUBLIC_API_URL=/api
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+For production (Vercel), set:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_API_URL=https://your-render-backend-url.onrender.com/api
+```
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/
+│   ├── (auth)/login/        # Login page
+│   ├── (dashboard)/
+│   │   ├── layout.tsx       # Header + tab navigation
+│   │   ├── dashboard/       # Main dashboard
+│   │   ├── inflow/          # Inflow entries
+│   │   ├── outflow/         # Outflow entries
+│   │   ├── sales/           # Sales tracking
+│   │   ├── balance/         # Balance reconciliation
+│   │   ├── party-dispatch/  # Warehouse dispatches
+│   │   ├── shop-transfer/   # Stock transfers
+│   │   ├── reports/         # Export reports
+│   │   ├── users/           # User management
+│   │   └── settings/        # Account settings
+│   └── globals.css          # Global design tokens
+├── components/              # Shared UI components
+├── contexts/                # Auth context
+└── lib/api.ts               # Axios API client
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Build for Production
+
+```bash
+npm run build
+npm start
+```
